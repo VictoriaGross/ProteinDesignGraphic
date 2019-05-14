@@ -2,6 +2,7 @@
 #include "SAMSON.hpp"
 
 
+
 SEProteinDesignVisualModelBackbone::SEProteinDesignVisualModelBackbone() {
 
 	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
@@ -61,12 +62,75 @@ void SEProteinDesignVisualModelBackbone::eraseImplementation() {
 }
 
 void SEProteinDesignVisualModelBackbone::display() {
+	if (pathNodeCarbonAlphaList.empty()) return;
 
-	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop. This is the main function of your visual model. 
-	// Implement this function to display things in SAMSON, for example thanks to the utility functions provided by SAMSON (e.g. displaySpheres, displayTriangles, etc.)
+	unsigned int numberOfPathNodes = pathNodeCarbonAlphaList.size();
+	unsigned int numberOfPathLines = pathNodeCarbonAlphaList.size() - 1;
+
+	//// allocate arrays and initialize them to zeros
+
+	float* positionData = new float[3 * numberOfPathNodes]();
+	float* pathNodeRadiusData = new float[numberOfPathNodes]();
+	float* pathLineRadiusData = new float[numberOfPathNodes]();
+	float* colorData = new float[4 * numberOfPathNodes]();
+	unsigned int* capData = new unsigned int[numberOfPathNodes]();
+	unsigned int* flagData = new unsigned int[numberOfPathNodes]();
+	unsigned int* indexData = new unsigned int[2 * numberOfPathLines]();
+
+	//// fill in the arrays
+
+	unsigned int currentPathNodeIndex = 0;
+
+	SB_FOR(SEProteinDesignNodeCarbonAlpha* currentPathNode, pathNodeCarbonAlphaList) {
+
+		SBPosition3 position = currentPathNode->getPosition();
+		positionData[3 * currentPathNodeIndex + 0] = (float)position.v[0].getValue();
+		positionData[3 * currentPathNodeIndex + 1] = (float)position.v[1].getValue();
+		positionData[3 * currentPathNodeIndex + 2] = (float)position.v[2].getValue();
+
+		if (currentPathNodeIndex < numberOfPathLines) { 
+			indexData[2 * currentPathNodeIndex + 0] = currentPathNodeIndex; 
+			indexData[2 * currentPathNodeIndex + 1] = currentPathNodeIndex + 1; }
+
+	//	// The covalent radius of a Carbon is 77 pm
+		
+		pathNodeRadiusData[currentPathNodeIndex] = (float)SBQuantity::length(SBQuantity::picometer(77)).getValue();
+	//	/*Unnecessary for now (no cylinders yet)
+	//	pathLineRadiusData[currentPathNodeIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.05)).getValue();
+	//	*/
+		colorData[4 * currentPathNodeIndex + 0] = 0.0f; 
+		colorData[4 * currentPathNodeIndex + 1] = 0.0f;
+		colorData[4 * currentPathNodeIndex + 2] = 0.0f;
+		colorData[4 * currentPathNodeIndex + 3] = 0.0f;
+		capData[currentPathNodeIndex] = 0;
+	flagData[currentPathNodeIndex] = currentPathNode->getInheritedFlags() | getInheritedFlags();
+		
+		currentPathNodeIndex++;
+
+	}
+
+	//// display 
+
+	SAMSON::displaySpheres(numberOfPathNodes, positionData, pathNodeRadiusData, colorData, flagData);
+	///* Let's not display any cylinders for now
+	//SAMSON::displayCylinders(numberOfPathLines, numberOfPathNodes, indexData, positionData, pathLineRadiusData, capData, colorData, flagData);
+	//*/
+
+	//// clean 
+
+	delete[] positionData;
+	delete[] indexData;
+	delete[] pathNodeRadiusData;
+	delete[] pathLineRadiusData;
+	delete[] capData;
+	delete[] colorData;
+	delete[] flagData;
 
 }
+	
+	
 
+	
 void SEProteinDesignVisualModelBackbone::displayForShadow() {
 
 	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop in order to compute shadows. 
@@ -127,3 +191,20 @@ void SEProteinDesignVisualModelBackbone::onStructuralEvent(SBStructuralEvent* do
 
 }
 
+void SEProteinDesignVisualModelBackbone::addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha) {
+
+	if (!pathNodeCarbonAlpha) return;
+	pathNodeCarbonAlphaList.addReferenceTarget(pathNodeCarbonAlpha);
+
+}
+
+void SEProteinDesignVisualModelBackbone::removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha) {
+
+	if (!pathNodeCarbonAlpha) return;
+	pathNodeCarbonAlphaList.removeReferenceTarget(pathNodeCarbonAlpha);
+
+}
+
+SEProteinDesignNodeCarbonAlpha* SEProteinDesignVisualModelBackbone::last() {
+	return pathNodeCarbonAlphaList.last();
+}

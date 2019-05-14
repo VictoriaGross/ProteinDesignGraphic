@@ -1,10 +1,10 @@
 #include "SEProteinDesignNodeConstructionPoint.hpp"
 #include "SAMSON.hpp"
 
+SEProteinDesignNodeConstructionPoint::SEProteinDesignNodeConstructionPoint() {}
 
-SEProteinDesignNodeConstructionPoint::SEProteinDesignNodeConstructionPoint() {
-
-	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
+SEProteinDesignNodeConstructionPoint::SEProteinDesignNodeConstructionPoint(const SBPosition3& position) {
+	this->position = position;
 
 }
 
@@ -113,3 +113,13 @@ void SEProteinDesignNodeConstructionPoint::forEachNodeDepthFirst(SBCClass* objec
 
 }
 
+/// Accessors to the position
+
+SBPosition3 SEProteinDesignNodeConstructionPoint::getPosition() {
+	return position;
+}
+
+void SEProteinDesignNodeConstructionPoint::setPosition( SBPosition3& position) {
+	this->position = position;
+
+}

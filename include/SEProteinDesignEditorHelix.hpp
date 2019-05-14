@@ -9,6 +9,14 @@
 #include "SBStructuralEvent.hpp"
 #include "SBAction.hpp"
 
+// We will need to use construction points and carbon alpha
+#include "SEProteinDesignNodeConstructionPoint.hpp"
+#include "SEProteinDesignNodeCarbonAlpha.hpp"
+
+// We will need to access the backbone visual model
+#include "SEProteinDesignVisualModelBackbone.hpp"
+
+
 /// This class implements an editor
 
 class SEProteinDesignEditorHelix : public SBGEditor {
@@ -100,11 +108,38 @@ public :
 	//@{
 
 	SEProteinDesignEditorHelixGUI*											getPropertyWidget() const;												///< Returns the property widget of the editor
-
+	
+	void setLastCarbon(SEProteinDesignNodeCarbonAlpha& Carbon);
+	const SEProteinDesignNodeCarbonAlpha getLastCarbon();
+	void setPathLength(float& size);
+	const float getPathLength();
+	void setBeginning(SBPosition3& position);
+	//void setEnd(SBPosition3& position);
+	const SBPosition3 getBeginningPosition();
+	//const SBPosition3 getEndPosition();
+	//SEProteinDesignNodeConstructionPoint getBeginningPoint();
+	//SEProteinDesignNodeConstructionPoint getEndPoint();
 	//@}
+
+private:
+
+	// We store a pointer to the path that we create with the helix
+	SBPointer<SEProteinDesignVisualModelBackbone> path;
+	// This pointer will be non-zero whenever we are creating or updating an helix and zero otherwise
+	
+	// We store the length of the path to access it easily and the pointer to the last Carbon
+	unsigned int pathLength;
+	SEProteinDesignNodeCarbonAlpha LastCarbon;
+
+	/*SEProteinDesignNodeConstructionPoint beginHelix;
+	SEProteinDesignNodeConstructionPoint endHelix;*/
+	
+	// We store the beginning of the helix
+	SBPosition3 beginning;
+
 
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignEditorHelix, "SEProteinDesignEditorHelix", "57600F16-8983-245C-78E6-A9811E2F3020");
+SB_REGISTER_TYPE(SEProteinDesignEditorHelix, "SEProteinDesignEditorHelix", "F85F4256-1864-1242-1761-E23D846D9941");
 SB_DECLARE_BASE_TYPE(SEProteinDesignEditorHelix, SBGEditor);

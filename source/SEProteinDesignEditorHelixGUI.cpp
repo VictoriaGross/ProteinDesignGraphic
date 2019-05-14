@@ -32,7 +32,7 @@ void SEProteinDesignEditorHelixGUI::saveSettings(SBGSettings* settings) {
 
 }
 
-SBCContainerUUID SEProteinDesignEditorHelixGUI::getUUID() const { return SBCContainerUUID( "81DA7147-850B-3F01-8A51-C541A7F7BCF8" );}
+SBCContainerUUID SEProteinDesignEditorHelixGUI::getUUID() const { return SBCContainerUUID( "124000E7-0517-01F1-66A3-2BABB567B388" );}
 
 QPixmap SEProteinDesignEditorHelixGUI::getLogo() const { 
 	

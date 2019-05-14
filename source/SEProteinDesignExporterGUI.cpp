@@ -32,7 +32,7 @@ void SEProteinDesignExporterGUI::saveSettings(SBGSettings* settings) {
 
 }
 
-SBCContainerUUID SEProteinDesignExporterGUI::getUUID() const { return SBCContainerUUID( "A236BD73-C878-9C42-D931-5B9A801A1480" );}
+SBCContainerUUID SEProteinDesignExporterGUI::getUUID() const { return SBCContainerUUID( "FC991AB1-3AA3-BF11-CF73-4E396C8650CF" );}
 
 QPixmap SEProteinDesignExporterGUI::getLogo() const { 
 	

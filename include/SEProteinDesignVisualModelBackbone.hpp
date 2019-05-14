@@ -6,6 +6,9 @@
 #include "SBDocumentEvent.hpp"
 #include "SBStructuralEvent.hpp"
 
+#include "SBAtom.hpp" // This model will use the representation of atoms
+#include "SEProteinDesignNodeCarbonAlpha.hpp"
+#include "SEProteinDesignNodeConstructionPoint.hpp"
 
 /// This class implements a visual model
 
@@ -63,9 +66,17 @@ public :
 
 	//@}
 
+	// The helix stores a list of CarbonAlpha																																				
+	void addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha);
+	void removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarboneAlpha);
+	SEProteinDesignNodeCarbonAlpha* last();
+
+private: 
+	// The helix stores a list of CarbonAlpha
+	SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
 
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelBackbone, "SEProteinDesignVisualModelBackbone", "8DCF7440-69C5-1A98-8243-0B9215E6713D");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelBackbone, "SEProteinDesignVisualModelBackbone", "A59400D1-9B56-B5C8-0D4A-2201BE646A26");
 SB_DECLARE_BASE_TYPE(SEProteinDesignVisualModelBackbone, SBMVisualModel);

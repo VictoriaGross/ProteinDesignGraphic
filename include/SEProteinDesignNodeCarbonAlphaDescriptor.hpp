@@ -17,7 +17,7 @@ SB_CLASS_BEGIN(SEProteinDesignNodeCarbonAlpha);
 	SB_FACTORY_BEGIN;
 
 		SB_CONSTRUCTOR_0(SEProteinDesignNodeCarbonAlpha);
-
+		//SB_CONSTRUCTOR_0(SEProteinDesignNodeCarbonAlpha, const SBPosition3&); // The constructor which creates a carbon according to a position
 	SB_FACTORY_END;
 
 	SB_INTERFACE_BEGIN;

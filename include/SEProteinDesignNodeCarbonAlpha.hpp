@@ -2,9 +2,14 @@
 
 #include "SBDDataGraphNode.hpp"
 
+/// A carbon alpha is a Node wich contains its position
+#include "SBDDataGraphNode.hpp"
+#include "SBVector3.hpp"
+// We have included all files concerning vectors
+
 /// This class implements a node
 
-class SEProteinDesignNodeCarbonAlpha : public SBDDataGraphNode {
+class SEProteinDesignNodeCarbonAlpha : public SBDDataGraphNode{
 
 	SB_CLASS
 
@@ -13,7 +18,16 @@ public :
 	/// \name Constructors and destructors
 	//@{
 
-	SEProteinDesignNodeCarbonAlpha();																													///< Builds a node					
+	/// CONSTRUCTORS
+
+	SEProteinDesignNodeCarbonAlpha();	
+	///< Builds a node that is void
+
+	SEProteinDesignNodeCarbonAlpha(const SBPosition3& position);
+	///< Builds a node according to a given position
+
+	
+	/// DESTRUCTORS
 	virtual ~SEProteinDesignNodeCarbonAlpha();																											///< Destructs the node
 
 	//@}
@@ -64,9 +78,15 @@ public :
 
 	//@}
 
+// Let us get and set the position of a Carbon Alpha (Already in the atom description)
+	SBPosition3 getPosition() const;
+	void setPosition(const SBPosition3& position);
 
+private:
+	// A CarbonAlpha has a position
+	SBPosition3 position;
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeCarbonAlpha, "SEProteinDesignNodeCarbonAlpha", "C82BFF0A-CDFF-6399-00AA-3B640788C0B9");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeCarbonAlpha, "SEProteinDesignNodeCarbonAlpha", "7D904072-BA01-4D89-057A-1569E7A2E11F");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeCarbonAlpha, SBDDataGraphNode);

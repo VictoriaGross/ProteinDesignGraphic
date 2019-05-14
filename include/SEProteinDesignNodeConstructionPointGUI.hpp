@@ -45,5 +45,5 @@ public :
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignNodeConstructionPointGUI, "SEProteinDesignNodeConstructionPointGUI", "F9BA6BD9-BA5E-667E-3DFC-A9A6B74AEBC1");
+SB_REGISTER_TYPE(SEProteinDesignNodeConstructionPointGUI, "SEProteinDesignNodeConstructionPointGUI", "8BD4866B-66CC-9013-212F-F99E1D94ECC3");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeConstructionPointGUI, SBGDataGraphNode);

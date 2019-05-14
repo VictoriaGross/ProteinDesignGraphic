@@ -106,5 +106,5 @@ public :
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignEditorSpline, "SEProteinDesignEditorSpline", "50B6AEAC-411C-EF08-2898-B1E2EC788E10");
+SB_REGISTER_TYPE(SEProteinDesignEditorSpline, "SEProteinDesignEditorSpline", "8F3E6E83-07CD-CBB8-449C-0FF87B8C4808");
 SB_DECLARE_BASE_TYPE(SEProteinDesignEditorSpline, SBGEditor);

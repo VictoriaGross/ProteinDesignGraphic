@@ -1,13 +1,18 @@
 #include "SEProteinDesignNodeCarbonAlpha.hpp"
 #include "SAMSON.hpp"
 
+/// A constructor
 
-SEProteinDesignNodeCarbonAlpha::SEProteinDesignNodeCarbonAlpha() {
+SEProteinDesignNodeCarbonAlpha::SEProteinDesignNodeCarbonAlpha(){}
 
-	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
-
+SEProteinDesignNodeCarbonAlpha::SEProteinDesignNodeCarbonAlpha(const SBPosition3& position) {
+	// A CarbonAlpha is a carbon
+	this->position = position;
 }
 
+
+
+/// The destructor
 SEProteinDesignNodeCarbonAlpha::~SEProteinDesignNodeCarbonAlpha() {
 
 	// SAMSON Element generator pro tip: disconnect from signals you might have connected to.
@@ -110,6 +115,16 @@ void SEProteinDesignNodeCarbonAlpha::forEachNodeDepthFirst(SBCClass* object, voi
 	// SAMSON Element generator pro tip: modify this function if your node has descendants, in order to recursively call this function on these descendants.
 
 	(*object.*action)(this);
+
+}
+
+/// Getter and Setter for the position of the Carbon Alpha
+SBPosition3 SEProteinDesignNodeCarbonAlpha::getPosition() const {
+	return position;
+}
+
+void SEProteinDesignNodeCarbonAlpha::setPosition(const SBPosition3& position) {
+	this->position = position;
 
 }
 

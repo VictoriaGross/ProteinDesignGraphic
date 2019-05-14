@@ -36,7 +36,7 @@ void SEProteinDesignVisualModelBackboneProperties::saveSettings(SBGSettings* set
 
 }
 
-SBCContainerUUID SEProteinDesignVisualModelBackboneProperties::getUUID() const { return SBCContainerUUID( "52483344-467E-8D1F-D0B5-5D298054FC31" );}
+SBCContainerUUID SEProteinDesignVisualModelBackboneProperties::getUUID() const { return SBCContainerUUID( "BAAC7F13-E48E-A446-8AA7-BFDF3421A9BF" );}
 
 QPixmap SEProteinDesignVisualModelBackboneProperties::getLogo() const { 
 	

@@ -79,5 +79,5 @@ private:
 
 };
 
-SB_REGISTER_TYPE(SEProteinDesignNodeConstructionPointProperties, "SEProteinDesignNodeConstructionPointProperties", "9791A395-D2AB-428F-3162-7A89F105CA3F");
+SB_REGISTER_TYPE(SEProteinDesignNodeConstructionPointProperties, "SEProteinDesignNodeConstructionPointProperties", "F8C46B00-B2E5-AE0C-6FD5-D482FD7B4B4A");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeConstructionPointProperties, SBGDataGraphNodeProperties);

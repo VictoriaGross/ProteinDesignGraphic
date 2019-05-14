@@ -36,7 +36,7 @@ void SEProteinDesignVisualModelCurveProperties::saveSettings(SBGSettings* settin
 
 }
 
-SBCContainerUUID SEProteinDesignVisualModelCurveProperties::getUUID() const { return SBCContainerUUID( "56EB4FD9-B2E9-BA1B-1F6D-6C4461862680" );}
+SBCContainerUUID SEProteinDesignVisualModelCurveProperties::getUUID() const { return SBCContainerUUID( "E6E40E4A-428B-0A47-72D7-5C0787A3B57D" );}
 
 QPixmap SEProteinDesignVisualModelCurveProperties::getLogo() const { 
 	

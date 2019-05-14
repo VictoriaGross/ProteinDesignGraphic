@@ -79,5 +79,5 @@ private:
 
 };
 
-SB_REGISTER_TYPE(SEProteinDesignNodeCarbonAlphaProperties, "SEProteinDesignNodeCarbonAlphaProperties", "986B3068-9F9F-FE9F-C541-476F959D9733");
+SB_REGISTER_TYPE(SEProteinDesignNodeCarbonAlphaProperties, "SEProteinDesignNodeCarbonAlphaProperties", "4259C568-2B6E-F534-DFEE-7531D91A159A");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeCarbonAlphaProperties, SBGDataGraphNodeProperties);

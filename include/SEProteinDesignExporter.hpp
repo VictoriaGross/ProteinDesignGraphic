@@ -40,5 +40,5 @@ public :
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignExporter, "SEProteinDesignExporter", "943D9626-289C-5038-AF0F-2ACABC9685FF");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignExporter, "SEProteinDesignExporter", "38D26BCA-D0FD-C0C5-08D7-4AB8704E8E3F");
 SB_DECLARE_BASE_TYPE(SEProteinDesignExporter, SBIFileExporter);

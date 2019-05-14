@@ -35,7 +35,7 @@ void SEProteinDesignNodeConstructionPointProperties::saveSettings(SBGSettings* s
 
 }
 
-SBCContainerUUID SEProteinDesignNodeConstructionPointProperties::getUUID() const { return SBCContainerUUID( "711311EF-5EAC-C7EE-0EFA-DCBD9B34EE40" );}
+SBCContainerUUID SEProteinDesignNodeConstructionPointProperties::getUUID() const { return SBCContainerUUID( "FDD5685C-007A-D0CF-7EFB-DD0AF4CC51DF" );}
 
 QPixmap SEProteinDesignNodeConstructionPointProperties::getLogo() const { 
 	

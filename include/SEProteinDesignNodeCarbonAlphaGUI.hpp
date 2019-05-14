@@ -45,5 +45,5 @@ public :
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignNodeCarbonAlphaGUI, "SEProteinDesignNodeCarbonAlphaGUI", "A8BA860F-DAF1-120B-012D-8AA06AD2F5F9");
+SB_REGISTER_TYPE(SEProteinDesignNodeCarbonAlphaGUI, "SEProteinDesignNodeCarbonAlphaGUI", "3C62B214-A639-0B3B-71F2-F7AA41020B22");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeCarbonAlphaGUI, SBGDataGraphNode);

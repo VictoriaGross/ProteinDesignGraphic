@@ -35,7 +35,7 @@ void SEProteinDesignNodeCarbonAlphaProperties::saveSettings(SBGSettings* setting
 
 }
 
-SBCContainerUUID SEProteinDesignNodeCarbonAlphaProperties::getUUID() const { return SBCContainerUUID( "BF234364-EC9D-D4E5-C9F7-024342D40760" );}
+SBCContainerUUID SEProteinDesignNodeCarbonAlphaProperties::getUUID() const { return SBCContainerUUID( "C55D2A1C-DFBD-408C-3B1E-96B1D098A806" );}
 
 QPixmap SEProteinDesignNodeCarbonAlphaProperties::getLogo() const { 
 	

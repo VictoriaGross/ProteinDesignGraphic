@@ -80,5 +80,5 @@ private:
 
 };
 
-SB_REGISTER_TYPE(SEProteinDesignVisualModelCurveProperties, "SEProteinDesignVisualModelCurveProperties", "F9882318-FBAA-4F2B-4093-BCC606A98ABA");
+SB_REGISTER_TYPE(SEProteinDesignVisualModelCurveProperties, "SEProteinDesignVisualModelCurveProperties", "5995CCB5-65CD-0FDF-20AC-68E1D29E8C27");
 SB_DECLARE_BASE_TYPE(SEProteinDesignVisualModelCurveProperties, SBGDataGraphNodeProperties);

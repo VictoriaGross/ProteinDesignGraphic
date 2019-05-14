@@ -80,5 +80,5 @@ private:
 
 };
 
-SB_REGISTER_TYPE(SEProteinDesignVisualModelBackboneProperties, "SEProteinDesignVisualModelBackboneProperties", "013B1AF6-17AA-F26F-E15A-32F25DCCAD34");
+SB_REGISTER_TYPE(SEProteinDesignVisualModelBackboneProperties, "SEProteinDesignVisualModelBackboneProperties", "47352F94-1563-8A2A-67F5-5BE7ED21E183");
 SB_DECLARE_BASE_TYPE(SEProteinDesignVisualModelBackboneProperties, SBGDataGraphNodeProperties);

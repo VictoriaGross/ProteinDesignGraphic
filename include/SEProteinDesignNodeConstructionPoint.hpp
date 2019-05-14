@@ -3,6 +3,10 @@
 #include "SBDDataGraphNode.hpp"
 
 /// This class implements a node
+// A node with a position
+#include "SBDDataGraphNode.hpp"
+#include "SBVector3.hpp"
+
 
 class SEProteinDesignNodeConstructionPoint : public SBDDataGraphNode {
 
@@ -12,8 +16,8 @@ public :
 
 	/// \name Constructors and destructors
 	//@{
-
-	SEProteinDesignNodeConstructionPoint();																													///< Builds a node					
+	SEProteinDesignNodeConstructionPoint();
+	SEProteinDesignNodeConstructionPoint(const SBPosition3& position);																													///< Builds a node					
 	virtual ~SEProteinDesignNodeConstructionPoint();																											///< Destructs the node
 
 	//@}
@@ -64,9 +68,16 @@ public :
 
 	//@}
 
+	// A ConstructionPoint has a position
+	SBPosition3 getPosition() ;
+	void setPosition( SBPosition3& position);
+
+private:
+
+	SBPosition3 position;
 
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeConstructionPoint, "SEProteinDesignNodeConstructionPoint", "5251BDA4-E6C5-2D57-5455-DF6BDA0E4079");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeConstructionPoint, "SEProteinDesignNodeConstructionPoint", "798779E2-F348-ADFC-4A82-1D5CA9B85965");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeConstructionPoint, SBDDataGraphNode);

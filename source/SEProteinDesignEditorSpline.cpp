@@ -23,7 +23,7 @@ SEProteinDesignEditorSpline::~SEProteinDesignEditorSpline() {
 
 SEProteinDesignEditorSplineGUI* SEProteinDesignEditorSpline::getPropertyWidget() const { return static_cast<SEProteinDesignEditorSplineGUI*>(propertyWidget); }
 
-SBCContainerUUID SEProteinDesignEditorSpline::getUUID() const { return SBCContainerUUID("33D074A2-1AD3-93B5-4EFD-98B41D35A474"); }
+SBCContainerUUID SEProteinDesignEditorSpline::getUUID() const { return SBCContainerUUID("9E443B72-A381-C781-A2FE-CC582B647F57"); }
 
 QString SEProteinDesignEditorSpline::getName() const { 
 

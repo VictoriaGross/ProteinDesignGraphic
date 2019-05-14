@@ -67,5 +67,5 @@ public :
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelCurve, "SEProteinDesignVisualModelCurve", "12D40E37-B38E-12FC-F142-D74076AB6003");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelCurve, "SEProteinDesignVisualModelCurve", "8BBB802E-73A7-7765-F241-8C218BACEBC8");
 SB_DECLARE_BASE_TYPE(SEProteinDesignVisualModelCurve, SBMVisualModel);

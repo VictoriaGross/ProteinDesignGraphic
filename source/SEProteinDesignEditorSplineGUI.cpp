@@ -32,7 +32,7 @@ void SEProteinDesignEditorSplineGUI::saveSettings(SBGSettings* settings) {
 
 }
 
-SBCContainerUUID SEProteinDesignEditorSplineGUI::getUUID() const { return SBCContainerUUID( "CBD17AD7-A3BF-D567-497A-2A072CE117F5" );}
+SBCContainerUUID SEProteinDesignEditorSplineGUI::getUUID() const { return SBCContainerUUID( "DDD6F42A-9E1F-4D1A-62E1-F0155352F5E2" );}
 
 QPixmap SEProteinDesignEditorSplineGUI::getLogo() const { 
 	
