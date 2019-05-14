@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "SBDDataGraphNode.hpp"
+#include "SBVector3.hpp"
 
 /// This class implements a node
 
@@ -13,7 +14,7 @@ public :
 	/// \name Constructors and destructors
 	//@{
 
-	SEProteinDesignNodeConstructionPoint();																													///< Builds a node					
+    SEProteinDesignNodeConstructionPoint(const SBPosition3& position);																													///< Builds a node
 	virtual ~SEProteinDesignNodeConstructionPoint();																											///< Destructs the node
 
 	//@}
@@ -64,9 +65,16 @@ public :
 
 	//@}
 
+    SBPosition3 getPosition() const;
+    void setPosition(const SBPosition3& position);
+
+    private:
+
+        SBPosition3 position;
+
 
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeConstructionPoint, "SEProteinDesignNodeConstructionPoint", "5251BDA4-E6C5-2D57-5455-DF6BDA0E4079");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeConstructionPoint, "SEProteinDesignNodeConstructionPoint", "1DD4EAA2-555D-4B66-38FE-034E5509A8A8");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeConstructionPoint, SBDDataGraphNode);

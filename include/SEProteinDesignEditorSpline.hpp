@@ -8,6 +8,7 @@
 #include "SBDynamicalEvent.hpp"
 #include "SBStructuralEvent.hpp"
 #include "SBAction.hpp"
+#include "SEProteinDesignVisualModelCurve.hpp"
 
 /// This class implements an editor
 
@@ -103,8 +104,12 @@ public :
 
 	//@}
 
+private :
+    SBPointer<SEProteinDesignVisualModelCurve> path;
+    SBPointer<SEProteinDesignNodeConstructionPoint> selectedNode;
+
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignEditorSpline, "SEProteinDesignEditorSpline", "50B6AEAC-411C-EF08-2898-B1E2EC788E10");
+SB_REGISTER_TYPE(SEProteinDesignEditorSpline, "SEProteinDesignEditorSpline", "459F4288-5EF8-C70C-ABD2-00F27354361E");
 SB_DECLARE_BASE_TYPE(SEProteinDesignEditorSpline, SBGEditor);

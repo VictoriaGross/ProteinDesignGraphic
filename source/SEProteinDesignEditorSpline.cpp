@@ -6,24 +6,17 @@ SEProteinDesignEditorSpline::SEProteinDesignEditorSpline() {
 
 	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
 
-	propertyWidget = new SEProteinDesignEditorSplineGUI(this);
-	propertyWidget->loadDefaultSettings();
-	SAMSON::addWidget(propertyWidget);
+    propertyWidget = 0;
 
 }
 
 SEProteinDesignEditorSpline::~SEProteinDesignEditorSpline() {
 
-	// SAMSON Element generator pro tip: disconnect from signals you might have connected to.
-
-	propertyWidget->saveDefaultSettings();
-	delete propertyWidget;
-
 }
 
 SEProteinDesignEditorSplineGUI* SEProteinDesignEditorSpline::getPropertyWidget() const { return static_cast<SEProteinDesignEditorSplineGUI*>(propertyWidget); }
 
-SBCContainerUUID SEProteinDesignEditorSpline::getUUID() const { return SBCContainerUUID("33D074A2-1AD3-93B5-4EFD-98B41D35A474"); }
+SBCContainerUUID SEProteinDesignEditorSpline::getUUID() const { return SBCContainerUUID("DF66FB05-F8D8-A79E-77DC-A3532B35B33A"); }
 
 QString SEProteinDesignEditorSpline::getName() const { 
 
@@ -97,16 +90,14 @@ void SEProteinDesignEditorSpline::saveSettings(SBGSettings* settings) {
 
 void SEProteinDesignEditorSpline::beginEditing() {
 
-	// SAMSON Element generator pro tip: SAMSON calls this function when your editor becomes active. 
-	// Implement this function if you need to prepare some data structures in order to be able to handle GUI or SAMSON events.
-
+    path = 0;
+    selectedNode = 0;
 }
 
 void SEProteinDesignEditorSpline::endEditing() {
 
-	// SAMSON Element generator pro tip: SAMSON calls this function immediately before your editor becomes inactive (for example when another editor becomes active). 
-	// Implement this function if you need to clean some data structures.
-
+    path = 0;
+    selectedNode = 0;
 }
 
 void SEProteinDesignEditorSpline::getActions(SBVector<SBAction*>& actionVector) {
@@ -143,22 +134,56 @@ void SEProteinDesignEditorSpline::displayInterface() {
 
 void SEProteinDesignEditorSpline::mousePressEvent(QMouseEvent* event) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+    SBNode* node = SAMSON::getNode(event->x(), event->y(),
+            (SBNode::GetClass() == std::string("SEProteinDesignNodeConstructionPoint")) &&
+            (SBNode::GetElementUUID() == SBUUID(SB_ELEMENT_UUID)));
+
+        if (node) selectedNode = static_cast<SEProteinDesignNodeConstructionPoint*>(node);
+        else selectedNode = 0;
 
 }
 
 void SEProteinDesignEditorSpline::mouseReleaseEvent(QMouseEvent* event) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+    if (selectedNode != 0) {
+
+        selectedNode = 0;
+        return;
+
+    }
+
+    if (path == 0 || (path != 0 && path->isErased())) {
+
+            path = new SEProteinDesignVisualModelCurve;
+            path->create();
+            SAMSON::getActiveLayer()->addChild(path());
+
+        }
+
+        // get a world position from the mouse position when the user clicked
+
+        SBPosition3 position = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+
+        // add a path node
+
+        SEProteinDesignNodeConstructionPoint* Node = new SEProteinDesignNodeConstructionPoint(position);
+        path->addNode(Node);
+
+        SAMSON::requestViewportUpdate(); // refresh the viewport
 
 }
 
 void SEProteinDesignEditorSpline::mouseMoveEvent(QMouseEvent* event) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+    if (selectedNode != 0) {
+
+            SBPosition3 position = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+
+            selectedNode->setPosition(position);
+
+            SAMSON::requestViewportUpdate();
+
+        }
 
 }
 
@@ -178,8 +203,13 @@ void SEProteinDesignEditorSpline::wheelEvent(QWheelEvent* event) {
 
 void SEProteinDesignEditorSpline::keyPressEvent(QKeyEvent* event) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+    if (event->key() == Qt::Key_Escape) {
+
+            path = 0;
+            selectedNode = 0;
+            event->accept();
+
+        }
 
 }
 

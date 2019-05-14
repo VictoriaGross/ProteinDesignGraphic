@@ -16,7 +16,7 @@ SB_CLASS_BEGIN(SEProteinDesignNodeConstructionPoint);
 
 	SB_FACTORY_BEGIN;
 
-		SB_CONSTRUCTOR_0(SEProteinDesignNodeConstructionPoint);
+        SB_CONSTRUCTOR_1(SEProteinDesignNodeConstructionPoint, const SBPosition3&);
 
 	SB_FACTORY_END;
 

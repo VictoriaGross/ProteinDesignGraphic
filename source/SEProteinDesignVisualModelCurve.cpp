@@ -62,8 +62,237 @@ void SEProteinDesignVisualModelCurve::eraseImplementation() {
 
 void SEProteinDesignVisualModelCurve::display() {
 
-	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop. This is the main function of your visual model. 
-	// Implement this function to display things in SAMSON, for example thanks to the utility functions provided by SAMSON (e.g. displaySpheres, displayTriangles, etc.)
+    if (ConstructionNodeList.empty()) return;
+
+    unsigned int numberOfNodes = ConstructionNodeList.size();
+    int n = 50;
+
+
+    // allocate arrays and initialize them to zeros
+
+    float* positionData = new float[3 * numberOfNodes]();
+    float* radiusData = new float[numberOfNodes]();
+    float* colorData = new float[4 * numberOfNodes]();
+    unsigned int* flagData = new unsigned int[numberOfNodes]();
+
+    float* positionSpline = new float[3 * n * (numberOfNodes-1)]();
+    float* radiusSpline = new float[n * (numberOfNodes-1)]();
+    float* colorSpline = new float[4 * n * (numberOfNodes-1)]();
+    unsigned int* flagSpline = new unsigned int[n * (numberOfNodes-1)]();
+
+
+    // fill in the arrays
+
+    unsigned int currentIndex = 0;
+
+
+    SB_FOR(SEProteinDesignNodeConstructionPoint* currentNode, ConstructionNodeList){
+
+        //main nodes
+
+
+        SBPosition3 position = currentNode->getPosition();
+
+        positionData[3*currentIndex+0] = (float)position.v[0].getValue();
+        positionData[3*currentIndex+1] = (float)position.v[1].getValue();
+        positionData[3*currentIndex+2] = (float)position.v[2].getValue();
+        radiusData[currentIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.2)).getValue();
+        colorData[4 * currentIndex + 0] = 1.0f;
+        colorData[4 * currentIndex + 1] = 0.0f;
+        colorData[4 * currentIndex + 2] = 0.0f;
+        colorData[4 * currentIndex + 3] = 1.0f;
+
+        flagData[currentIndex] = currentNode->getInheritedFlags() | getInheritedFlags();
+
+        //spline nodes
+
+        if (currentIndex>2){
+            float x3 = positionData[3*currentIndex+0];
+            float x2 = positionData[3*(currentIndex-1)+0];
+            float x1 = positionData[3*(currentIndex-2)+0];
+            float x0 = positionData[3*(currentIndex-3)+0];
+
+            float y3 = positionData[3*currentIndex+1];
+            float y2 = positionData[3*(currentIndex-1)+1];
+            float y1 = positionData[3*(currentIndex-2)+1];
+            float y0 = positionData[3*(currentIndex-3)+1];
+
+            float z3 = positionData[3*currentIndex+2];
+            float z2 = positionData[3*(currentIndex-1)+2];
+            float z1 = positionData[3*(currentIndex-2)+2];
+            float z0 = positionData[3*(currentIndex-3)+2];
+
+
+            for(int i=0;i<n;i++){
+                float t = float(i+1)/(n+1);
+
+                float a = 0.5f*(-t+2*t*t-t*t*t);
+                float b = 0.5f*(2-5*t*t+3*t*t*t);
+                float c = 0.5f*(t+4*t*t-3*t*t*t);
+                float d = 0.5f*(-t*t+t*t*t);
+
+                positionSpline[3*n*(currentIndex-2)+3*i+0] = a*x0+b*x1+c*x2+d*x3;
+                positionSpline[3*n*(currentIndex-2)+3*i+1] = a*y0+b*y1+c*y2+d*y3;
+                positionSpline[3*n*(currentIndex-2)+3*i+2] = a*z0+b*z1+c*z2+d*z3;
+
+
+                radiusSpline[n*(currentIndex-2)+i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
+
+                colorSpline[4*n*(currentIndex-2)+4*i+0] = 1.0f;
+                colorSpline[4*n*(currentIndex-2)+4*i+1] = 1.0f;
+                colorSpline[4*n*(currentIndex-2)+4*i+2] = 0.0f;
+                colorSpline[4*n*(currentIndex-2)+4*i+3] = 1.0f;
+
+                flagSpline[n*(currentIndex-2)+i] = getInheritedFlags();
+            }
+        }
+
+
+
+
+        currentIndex++;
+    }
+
+    if (numberOfNodes==2){
+
+    float x3 = positionData[3];
+    float x2 = positionData[3];
+    float x1 = positionData[0];
+    float x0 = positionData[0];
+
+    float y3 = positionData[4];
+    float y2 = positionData[4];
+    float y1 = positionData[1];
+    float y0 = positionData[1];
+
+    float z3 = positionData[5];
+    float z2 = positionData[5];
+    float z1 = positionData[2];
+    float z0 = positionData[2];
+
+
+    for(int i=0;i<n;i++){
+        float t = float(i+1)/(n+1);
+
+        float a = 0.5f*(-t+2*t*t-t*t*t);
+        float b = 0.5f*(2-5*t*t+3*t*t*t);
+        float c = 0.5f*(t+4*t*t-3*t*t*t);
+        float d = 0.5f*(-t*t+t*t*t);
+
+        positionSpline[3*i+0] = a*x0+b*x1+c*x2+d*x3;
+        positionSpline[3*i+1] = a*y0+b*y1+c*y2+d*y3;
+        positionSpline[3*i+2] = a*z0+b*z1+c*z2+d*z3;
+
+
+        radiusSpline[i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
+
+        colorSpline[4*i+0] = 1.0f;
+        colorSpline[4*i+1] = 1.0f;
+        colorSpline[4*i+2] = 0.0f;
+        colorSpline[4*i+3] = 1.0f;
+
+        flagSpline[i] = getInheritedFlags();
+
+    }
+    }
+    if(numberOfNodes>2){
+
+        float x3 = positionData[6];
+        float x2 = positionData[3];
+        float x1 = positionData[0];
+        float x0 = positionData[0];
+
+        float y3 = positionData[7];
+        float y2 = positionData[4];
+        float y1 = positionData[1];
+        float y0 = positionData[1];
+
+        float z3 = positionData[8];
+        float z2 = positionData[5];
+        float z1 = positionData[2];
+        float z0 = positionData[2];
+
+
+        for(int i=0;i<n;i++){
+            float t = float(i+1)/(n+1);
+
+            float a = 0.5f*(-t+2*t*t-t*t*t);
+            float b = 0.5f*(2-5*t*t+3*t*t*t);
+            float c = 0.5f*(t+4*t*t-3*t*t*t);
+            float d = 0.5f*(-t*t+t*t*t);
+
+            positionSpline[3*i+0] = a*x0+b*x1+c*x2+d*x3;
+            positionSpline[3*i+1] = a*y0+b*y1+c*y2+d*y3;
+            positionSpline[3*i+2] = a*z0+b*z1+c*z2+d*z3;
+
+
+            radiusSpline[i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
+
+            colorSpline[4*i+0] = 1.0f;
+            colorSpline[4*i+1] = 1.0f;
+            colorSpline[4*i+2] = 0.0f;
+            colorSpline[4*i+3] = 1.0f;
+
+            flagSpline[i] = getInheritedFlags();
+    }
+
+
+
+        x3 = positionData[3*(numberOfNodes-1)+0];
+        x2 = positionData[3*(numberOfNodes-1)+0];
+        x1 = positionData[3*(numberOfNodes-2)+0];
+        x0 = positionData[3*(numberOfNodes-3)+0];
+
+        y3 = positionData[3*(numberOfNodes-1)+1];
+        y2 = positionData[3*(numberOfNodes-1)+1];
+        y1 = positionData[3*(numberOfNodes-2)+1];
+        y0 = positionData[3*(numberOfNodes-3)+1];
+
+        z3 = positionData[3*(numberOfNodes-1)+2];
+        z2 = positionData[3*(numberOfNodes-1)+2];
+        z1 = positionData[3*(numberOfNodes-2)+2];
+        z0 = positionData[3*(numberOfNodes-3)+2];
+
+
+        for(int i=0;i<n;i++){
+            float t = float(i+1)/(n+1);
+
+            float a = 0.5f*(-t+2*t*t-t*t*t);
+            float b = 0.5f*(2-5*t*t+3*t*t*t);
+            float c = 0.5f*(t+4*t*t-3*t*t*t);
+            float d = 0.5f*(-t*t+t*t*t);
+
+            positionSpline[3*n*(numberOfNodes-2)+3*i+0] = a*x0+b*x1+c*x2+d*x3;
+            positionSpline[3*n*(numberOfNodes-2)+3*i+1] = a*y0+b*y1+c*y2+d*y3;
+            positionSpline[3*n*(numberOfNodes-2)+3*i+2] = a*z0+b*z1+c*z2+d*z3;
+
+
+            radiusSpline[n*(numberOfNodes-2)+i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
+
+            colorSpline[4*n*(numberOfNodes-2)+4*i+0] = 1.0f;
+            colorSpline[4*n*(numberOfNodes-2)+4*i+1] = 1.0f;
+            colorSpline[4*n*(numberOfNodes-2)+4*i+2] = 0.0f;
+            colorSpline[4*n*(numberOfNodes-2)+4*i+3] = 1.0f;
+
+            flagSpline[n*(numberOfNodes-2)+i] = getInheritedFlags();
+    }
+    }
+
+    // display
+
+    SAMSON::displaySpheres(numberOfNodes, positionData, radiusData, colorData, flagData);
+    SAMSON::displaySpheres(n*(numberOfNodes-1), positionSpline, radiusSpline, colorSpline, flagSpline);
+
+    // clean
+
+    delete[] positionData;
+    delete[] radiusData;
+    delete[] colorData;
+    delete[] flagData;
+    delete[] positionSpline;
+    delete[] radiusSpline;
+    delete[] colorSpline;
+    delete[] flagSpline;
 
 }
 
@@ -77,10 +306,42 @@ void SEProteinDesignVisualModelCurve::displayForShadow() {
 
 void SEProteinDesignVisualModelCurve::displayForSelection() {
 
-	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop in order to perform object picking.
-	// Instead of rendering colors, your visual model is expected to write the index of a data graph node (obtained with getIndex()).
-	// Implement this function so that your visual model can be selected (if you render its own index) or can be used to select other objects (if you render 
-	// the other objects' indices), for example thanks to the utility functions provided by SAMSON (e.g. displaySpheresSelection, displayTrianglesSelection, etc.)
+    if (ConstructionNodeList.empty()) return;
+
+    unsigned int numberOfNodes = ConstructionNodeList.size();
+
+    // allocate arrays and initialize them to zeros
+
+    float* positionData = new float[3 * numberOfNodes]();
+    float* radiusData = new float[numberOfNodes]();
+    unsigned int* indexData = new unsigned int[numberOfNodes]();
+
+    // fill in the arrays
+
+    unsigned int currentIndex = 0;
+
+
+    SB_FOR(SEProteinDesignNodeConstructionPoint* currentNode, ConstructionNodeList){
+
+        SBPosition3 position = currentNode->getPosition();
+
+        positionData[3*currentIndex+0] = (float)position.v[0].getValue();
+        positionData[3*currentIndex+1] = (float)position.v[1].getValue();
+        positionData[3*currentIndex+2] = (float)position.v[2].getValue();
+
+        radiusData[currentIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.2)).getValue();
+
+        indexData[currentIndex] = currentNode->getNodeIndex();
+
+        currentIndex++;
+
+    }
+
+    SAMSON::displaySpheresSelection(numberOfNodes, positionData, radiusData, indexData);
+
+    delete[] positionData;
+    delete[] radiusData;
+    delete[] indexData;
 
 }
 
@@ -126,4 +387,15 @@ void SEProteinDesignVisualModelCurve::onStructuralEvent(SBStructuralEvent* docum
 	// SAMSON Element generator pro tip: implement this function if you need to handle structural events (e.g. when a structural node for which you provide a visual representation is updated)
 
 }
+
+void SEProteinDesignVisualModelCurve::addNode(SEProteinDesignNodeConstructionPoint* Node){
+    if (!Node) return;
+    ConstructionNodeList.addReferenceTarget(Node);
+}
+
+void SEProteinDesignVisualModelCurve::removeNode(SEProteinDesignNodeConstructionPoint* Node){
+    if (!Node) return;
+    ConstructionNodeList.removeReferenceTarget(Node);
+}
+
 

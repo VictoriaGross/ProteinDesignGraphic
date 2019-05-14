@@ -2,9 +2,10 @@
 #include "SAMSON.hpp"
 
 
-SEProteinDesignNodeCarbonAlpha::SEProteinDesignNodeCarbonAlpha() {
+SEProteinDesignNodeCarbonAlpha::SEProteinDesignNodeCarbonAlpha(const SBPosition3& position) {
 
-	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
+    this->position = position;
+
 
 }
 
@@ -111,5 +112,14 @@ void SEProteinDesignNodeCarbonAlpha::forEachNodeDepthFirst(SBCClass* object, voi
 
 	(*object.*action)(this);
 
+}
+
+
+SBPosition3 SEProteinDesignNodeCarbonAlpha::getPosition() const{
+    return position;
+}
+
+void SEProteinDesignNodeCarbonAlpha::setPosition(const SBPosition3& position){
+    this->position = position;
 }
 

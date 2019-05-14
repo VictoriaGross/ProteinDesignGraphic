@@ -5,6 +5,7 @@
 #include "SBBaseEvent.hpp"
 #include "SBDocumentEvent.hpp"
 #include "SBStructuralEvent.hpp"
+#include "SEProteinDesignNodeConstructionPoint.hpp"
 
 
 /// This class implements a visual model
@@ -63,9 +64,15 @@ public :
 
 	//@}
 
+    void addNode(SEProteinDesignNodeConstructionPoint* ConstructionNode);
+    void removeNode(SEProteinDesignNodeConstructionPoint* ConstructionNode);
+
+private :
+    SBPointerList<SEProteinDesignNodeConstructionPoint> ConstructionNodeList;
+
 
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelCurve, "SEProteinDesignVisualModelCurve", "12D40E37-B38E-12FC-F142-D74076AB6003");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignVisualModelCurve, "SEProteinDesignVisualModelCurve", "A94CACD0-52DC-8157-E843-FF5246F9CB94");
 SB_DECLARE_BASE_TYPE(SEProteinDesignVisualModelCurve, SBMVisualModel);

@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "SBDDataGraphNode.hpp"
+#include "SBVector3.hpp"
 
 /// This class implements a node
 
@@ -64,9 +65,16 @@ public :
 
 	//@}
 
+    SBPosition3 getPosition() const;
+    void setPosition(const SBPosition3& position);
+
+    private:
+
+        SBPosition3 position;
+
 
 };
 
 
-SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeCarbonAlpha, "SEProteinDesignNodeCarbonAlpha", "C82BFF0A-CDFF-6399-00AA-3B640788C0B9");
+SB_REGISTER_TARGET_TYPE(SEProteinDesignNodeCarbonAlpha, "SEProteinDesignNodeCarbonAlpha", "1936C312-E7D6-DC39-B3C6-4AB8566E7A50");
 SB_DECLARE_BASE_TYPE(SEProteinDesignNodeCarbonAlpha, SBDDataGraphNode);
