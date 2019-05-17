@@ -13,7 +13,7 @@ public :
 
 	/// \name Constructors and destructors
 	//@{
-
+	SEProteinDesignNodeConstructionPoint();
     SEProteinDesignNodeConstructionPoint(const SBPosition3& position);																													///< Builds a node
 	virtual ~SEProteinDesignNodeConstructionPoint();																											///< Destructs the node
 

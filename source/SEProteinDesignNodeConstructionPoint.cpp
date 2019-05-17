@@ -1,7 +1,7 @@
 #include "SEProteinDesignNodeConstructionPoint.hpp"
 #include "SAMSON.hpp"
 
-
+SEProteinDesignNodeConstructionPoint::SEProteinDesignNodeConstructionPoint(){}
 SEProteinDesignNodeConstructionPoint::SEProteinDesignNodeConstructionPoint(const SBPosition3& position) {
 
     this->position = position;
