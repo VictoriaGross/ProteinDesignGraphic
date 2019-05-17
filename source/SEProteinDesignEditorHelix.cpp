@@ -11,6 +11,7 @@ SEProteinDesignEditorHelix::SEProteinDesignEditorHelix() {
 	propertyWidget = new SEProteinDesignEditorHelixGUI(this);
 	propertyWidget->loadDefaultSettings();
 	SAMSON::addWidget(propertyWidget);
+	
 
 }
 
@@ -20,8 +21,7 @@ SEProteinDesignEditorHelix::~SEProteinDesignEditorHelix() {
 
 	propertyWidget->saveDefaultSettings();
 	delete propertyWidget;
-	/*beginHelix.~SEProteinDesignNodeConstructionPoint();
-	endHelix.~SEProteinDesignNodeConstructionPoint();*/
+	
 }
 
 SEProteinDesignEditorHelixGUI* SEProteinDesignEditorHelix::getPropertyWidget() const { return static_cast<SEProteinDesignEditorHelixGUI*>(propertyWidget); }
@@ -102,9 +102,11 @@ void SEProteinDesignEditorHelix::beginEditing() {
 	// We set the pointer path to zero as we begin editing (reinitialisation)
 
 	path = 0;
+	beginHelixCurrent =0 ;
+	endHelixCurrent = 0;
+
 	// If we don't edit end and beginning have the same value
-	SBPosition3 pos=getBegin().getPosition();
-	setEnd(pos);
+	
 
 }
 
@@ -112,9 +114,8 @@ void SEProteinDesignEditorHelix::endEditing() {
 	// We set the pointer path to zero when we finish to edit (reinitialisation)
 
 	path = 0;
-	SBPosition3 pos = getBegin().getPosition();
-	setEnd(pos);
-
+	beginHelixCurrent = 0;
+	endHelixCurrent = 0;
 	
 }
 
@@ -127,11 +128,92 @@ void SEProteinDesignEditorHelix::getActions(SBVector<SBAction*>& actionVector) {
 }
 
 void SEProteinDesignEditorHelix::display() {
+	if (endHelixList.empty() && beginHelixList.empty()) return;
 
-	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop. 
-	// Implement this function to display things in SAMSON, for example thanks to the utility functions provided by SAMSON (e.g. displaySpheres, displayTriangles, etc.)
+	unsigned int numberOfEndPoints = endHelixList.size();
+	unsigned int numberOfBeginPoints = beginHelixList.size();
+
+	// allocate arrays and initialize them to zeros for both the end list and the begin list
+
+	float* endpositionData = new float[3 * numberOfEndPoints]();
+	float* endpathNodeRadiusData = new float[numberOfEndPoints]();
+	float* endcolorData = new float[4 * numberOfEndPoints]();
+	unsigned int* endcapData = new unsigned int[numberOfEndPoints]();
+	unsigned int* endflagData = new unsigned int[numberOfEndPoints]();
+
+	float* beginpositionData = new float[3 * numberOfBeginPoints]();
+	float* beginpathNodeRadiusData = new float[numberOfBeginPoints]();
+	float* begincolorData = new float[4 * numberOfBeginPoints]();
+	unsigned int* begincapData = new unsigned int[numberOfBeginPoints]();
+	unsigned int* beginflagData = new unsigned int[numberOfBeginPoints]();
+
+	// fill in the arrays
+
+	unsigned int endcurrentPathNodeIndex = 0;
+	unsigned int begincurrentPathNodeIndex = 0;
+
+	SB_FOR(SEProteinDesignNodeConstructionPoint* currentPathNode, endHelixList) {
+
+		SBPosition3 position = currentPathNode->getPosition();
+		endpositionData[3 * endcurrentPathNodeIndex + 0] = (float)position.v[0].getValue();
+		endpositionData[3 * endcurrentPathNodeIndex + 1] = (float)position.v[1].getValue();
+		endpositionData[3 * endcurrentPathNodeIndex + 2] = (float)position.v[2].getValue();
+
+	
+		endpathNodeRadiusData[endcurrentPathNodeIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.4)).getValue();
+		endcolorData[4 * endcurrentPathNodeIndex + 0] = 1.0f;
+		endcolorData[4 * endcurrentPathNodeIndex + 1] = 1.0f;
+		endcolorData[4 * endcurrentPathNodeIndex + 2] = 0.0f;
+		endcolorData[4 * endcurrentPathNodeIndex + 3] = 1.0f;
+		endcapData[endcurrentPathNodeIndex] = 0; 
+		endflagData[endcurrentPathNodeIndex] = currentPathNode->getInheritedFlags();
+
+		endcurrentPathNodeIndex++;
+
+	}
+
+	SB_FOR(SEProteinDesignNodeConstructionPoint* currentPathNode, beginHelixList) {
+
+		SBPosition3 position = currentPathNode->getPosition();
+		beginpositionData[3 * begincurrentPathNodeIndex + 0] = (float)position.v[0].getValue();
+		beginpositionData[3 * begincurrentPathNodeIndex + 1] = (float)position.v[1].getValue();
+		beginpositionData[3 * begincurrentPathNodeIndex + 2] = (float)position.v[2].getValue();
+
+
+		beginpathNodeRadiusData[begincurrentPathNodeIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.4)).getValue();
+		begincolorData[4 * begincurrentPathNodeIndex + 0] = 3.0f;
+		begincolorData[4 * begincurrentPathNodeIndex + 1] = 0.0f;
+		begincolorData[4 * begincurrentPathNodeIndex + 2] = 0.0f;
+		begincolorData[4 * begincurrentPathNodeIndex + 3] = 3.0f;
+		begincapData[begincurrentPathNodeIndex] = 0;
+		beginflagData[begincurrentPathNodeIndex] = currentPathNode->getInheritedFlags();
+
+		begincurrentPathNodeIndex++;
+
+	}
+
+	// display 
+
+	SAMSON::displaySpheres(numberOfEndPoints, endpositionData, endpathNodeRadiusData, endcolorData, endflagData);
+	SAMSON::displaySpheres(numberOfBeginPoints, beginpositionData, beginpathNodeRadiusData, begincolorData, beginflagData);
+
+
+	// clean 
+
+	delete[] endpositionData;
+	delete[] endpathNodeRadiusData;
+	delete[] endcapData;
+	delete[] endcolorData;
+	delete[] endflagData;
+
+	delete[] beginpositionData;
+	delete[] beginpathNodeRadiusData;
+	delete[] begincapData;
+	delete[] begincolorData;
+	delete[] beginflagData;
 
 }
+
 
 void SEProteinDesignEditorHelix::displayForShadow() {
 
@@ -159,27 +241,35 @@ void SEProteinDesignEditorHelix::mousePressEvent(QMouseEvent* event) {
 			path->create();
 			SAMSON::getActiveLayer()->addChild(path());
 
+				//// We place the ConstructionPoint beginHelix
+				
+				SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+				setCurrentBegin(new SEProteinDesignNodeConstructionPoint(MousePos));
+				addBeginPoint(beginHelixCurrent);
+				SAMSON::requestViewportUpdate();
 		}
-		SBPosition3 position = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
-		setBegin(position);
 		
-
-		SAMSON::requestViewportUpdate();
 	}
 }
 
 void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
 	
-	//if (getBegin().getPosition() == getEnd().getPosition()) {
+		
 		
 		// In this case we start a new helix
 
 		SBCamera* activeCamera = SAMSON::getActiveCamera();
 		SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+		
+		//We set the end of the helix
+		setCurrentEnd(new SEProteinDesignNodeConstructionPoint(MousePos));
+		addEndPoint(endHelixCurrent);
+		SAMSON::requestViewportUpdate();
+
 		// The coordinates of the Helix axis system in the General Fixed axis system
 		float MouseLength = (float)SBQuantity::length(MousePos.norm()).getValue();
 		SBVector3 MousePos2 = MousePos.normalizedVersion()*MouseLength;
-		SBPosition3 AxisV = getBegin().getPosition() - MousePos;
+		SBPosition3 AxisV = getCurrentBegin()->getPosition() - MousePos;
 		SBQuantity::length NormV = AxisV.norm();
 		SBVector3 AxisVnormed = AxisV.normalizedVersion();
 		SBVector3 AxisZ = activeCamera->getBasisZ();
@@ -189,81 +279,34 @@ void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
 
 		// Let us enter the parameters of the helix
 		SBDQuantity::angstrom HelixLength = SBQuantity::angstrom(SBQuantity::length(NormV)); // The length of the Helix created by the user
-		SBQuantity::angstrom LengthBwCarbons = SBQuantity::angstrom(1.15); // The pace of the Helix
+		SBQuantity::angstrom LengthBwCarbons = SBQuantity::angstrom(1.5); // The pace of the Helix
 		SBQuantity::angstrom HelixRadius = SBQuantity::angstrom(2.3); //The radius of the Helix
-		SBQuantity::radian RotationPace = SBQuantity::degree(100);
+		double pi = 3.1415926535897932;
+		SBQuantity::radian RotationPace = SBQuantity::radian(2*pi / 3.6);
 		float NumberofCarbons = (float)SBQuantity::length(HelixLength).getValue() / ((float)SBQuantity::length(LengthBwCarbons).getValue());
 		int numb = floor(NumberofCarbons);
 		//// THE PROBLEM LIES IN THE TWO WHILE LOOPS
 
 		for (int i = 0; i < numb + 1; i += 1) {
 
+			
 			//for (int i = 0; i < 1; i += 1) {
 			SBPosition3 CurrentCarbonV = i*LengthBwCarbons*AxisVnormed;
 			SBPosition3 CurrentCarbonT = HelixRadius*cos(i*RotationPace)*AxisTnormed;
-			SBPosition3 CurrentCarbonZ = HelixRadius*sin(i*RotationPace)*AxisZnormed;
+			SBPosition3 CurrentCarbonZ = -HelixRadius*sin(i*RotationPace)*AxisZnormed;
 			SEProteinDesignNodeCarbonAlpha* CurrentCarbon = new SEProteinDesignNodeCarbonAlpha(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
 
 			path->addNode(CurrentCarbon);
+			
 			SAMSON::requestViewportUpdate();
-			//path = 0;
+			
+		
 		}
-		SBPosition3 CurrentCarbonV = (numb + 1)*LengthBwCarbons*AxisVnormed;
-		SBPosition3 CurrentCarbonT = HelixRadius*cos((numb + 1)*RotationPace)*AxisTnormed;
-		SBPosition3 CurrentCarbonZ = HelixRadius*sin((numb + 1)*RotationPace)*AxisZnormed;
-		setEnd(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
-
+		
 		SAMSON::requestViewportUpdate();
-	//}
+		path = 0;
 
-	//else {
-	//	// In this case we extend an helix
-
-	//	SBCamera* activeCamera = SAMSON::getActiveCamera();
-	//	SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
-	//	// The coordinates of the Helix axis system in the General Fixed axis system
-	//	float MouseLength = (float)SBQuantity::length(MousePos.norm()).getValue();
-	//	SBVector3 MousePos2 = MousePos.normalizedVersion()*MouseLength;
-
-	//	// We consider that we have clicked at the end of the first helix
-
-	//	SBPosition3 AxisV = getEnd().getPosition() - MousePos;
-	//	SBQuantity::length NormV = AxisV.norm();
-	//	SBVector3 AxisVnormed = AxisV.normalizedVersion();
-	//	SBVector3 AxisZ = activeCamera->getBasisZ();
-	//	//	SBQuantity::length NormZ = AxisZ.norm();
-	//	SBVector3 AxisZnormed = AxisZ.normalizedVersion();
-	//	SBVector3 AxisTnormed = AxisVnormed*AxisZnormed;
-
-	//	// Let us enter the parameters of the helix
-	//	SBDQuantity::angstrom HelixLength = SBQuantity::angstrom(SBQuantity::length(NormV)); // The length of the Helix created by the user
-	//	SBQuantity::angstrom LengthBwCarbons = SBQuantity::angstrom(1.15); // The pace of the Helix
-	//	SBQuantity::angstrom HelixRadius = SBQuantity::angstrom(2.3); //The radius of the Helix
-	//	SBQuantity::radian RotationPace = SBQuantity::degree(100);
-	//	float NumberofCarbons = (float)SBQuantity::length(HelixLength).getValue() / ((float)SBQuantity::length(LengthBwCarbons).getValue());
-	//	int numb = floor(NumberofCarbons);
-	//	//// THE PROBLEM LIES IN THE TWO WHILE LOOPS
-
-	//	for (int i = 1; i < numb + 1; i += 1) {
-	//		// The first carbon already exists
-
-	//		//for (int i = 0; i < 1; i += 1) {
-	//		SBPosition3 CurrentCarbonV = i*LengthBwCarbons*AxisVnormed;
-	//		SBPosition3 CurrentCarbonT = HelixRadius*cos(i*RotationPace)*AxisTnormed;
-	//		SBPosition3 CurrentCarbonZ = HelixRadius*sin(i*RotationPace)*AxisZnormed;
-	//		SEProteinDesignNodeCarbonAlpha* CurrentCarbon = new SEProteinDesignNodeCarbonAlpha(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
-
-	//		path->addNode(CurrentCarbon);
-	//		SAMSON::requestViewportUpdate();
-	//		//path = 0;
-	//	}
-	//	SBPosition3 CurrentCarbonV = (numb + 1)*LengthBwCarbons*AxisVnormed;
-	//	SBPosition3 CurrentCarbonT = HelixRadius*cos((numb + 1)*RotationPace)*AxisTnormed;
-	//	SBPosition3 CurrentCarbonZ = HelixRadius*sin((numb + 1)*RotationPace)*AxisZnormed;
-	//	setEnd(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
-
-	//	SAMSON::requestViewportUpdate();
-	//}
+	
 
 	}
 
@@ -331,7 +374,7 @@ void SEProteinDesignEditorHelix::onStructuralEvent(SBStructuralEvent* documentEv
 // Enables us to get the position of the construction points and the construction points themselves
 
 
-
+/*
 void SEProteinDesignEditorHelix::setBegin(SBPosition3& position) {
 	beginHelix.setPosition(position);
  }
@@ -339,12 +382,54 @@ void SEProteinDesignEditorHelix::setBegin(SBPosition3& position) {
 void SEProteinDesignEditorHelix::setEnd(SBPosition3& position) {
 	endHelix.setPosition(position);
 }
-
-SEProteinDesignNodeConstructionPoint SEProteinDesignEditorHelix::getBegin() {
-	return(beginHelix.getPosition());
+*/
+SEProteinDesignNodeConstructionPoint* SEProteinDesignEditorHelix::getCurrentBegin() {
+	return(beginHelixCurrent);
 }
 
 
-SEProteinDesignNodeConstructionPoint SEProteinDesignEditorHelix::getEnd() {
-	return(endHelix.getPosition());
+SEProteinDesignNodeConstructionPoint* SEProteinDesignEditorHelix::getCurrentEnd() {
+	return(endHelixCurrent);
 }
+
+// Functions to manage the lists of construction points
+
+void SEProteinDesignEditorHelix::addEndPoint(SEProteinDesignNodeConstructionPoint* pathNode) {
+
+	if (!pathNode) return;
+	endHelixList.addReferenceTarget(pathNode);
+
+}
+
+void SEProteinDesignEditorHelix::removeEndPoint(SEProteinDesignNodeConstructionPoint* pathNodeCarbonAlpha) {
+
+	if (!pathNodeCarbonAlpha) return;
+	endHelixList.removeReferenceTarget(pathNodeCarbonAlpha);
+
+}
+
+
+void SEProteinDesignEditorHelix::addBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode) {
+
+	if (!pathNode) return;
+	beginHelixList.addReferenceTarget(pathNode);
+
+}
+
+void SEProteinDesignEditorHelix::removeBeginPoint(SEProteinDesignNodeConstructionPoint* pathNodeCarbonAlpha) {
+
+	if (!pathNodeCarbonAlpha) return;
+	beginHelixList.removeReferenceTarget(pathNodeCarbonAlpha);
+
+}
+
+
+// Functions to manage the current pointers
+
+void SEProteinDesignEditorHelix::setCurrentEnd(SEProteinDesignNodeConstructionPoint* point) {
+	endHelixCurrent = point;
+}
+void SEProteinDesignEditorHelix::setCurrentBegin(SEProteinDesignNodeConstructionPoint* point) {
+	beginHelixCurrent = point;
+}
+

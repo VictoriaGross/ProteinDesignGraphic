@@ -140,12 +140,7 @@ void SEProteinDesignVisualModelBackbone::displayForShadow() {
 }
 
 void SEProteinDesignVisualModelBackbone::displayForSelection() {
-
-	// SAMSON Element generator pro tip: this function is called by SAMSON during the main rendering loop in order to perform object picking.
-	// Instead of rendering colors, your visual model is expected to write the index of a data graph node (obtained with getIndex()).
-	// Implement this function so that your visual model can be selected (if you render its own index) or can be used to select other objects (if you render 
-	// the other objects' indices), for example thanks to the utility functions provided by SAMSON (e.g. displaySpheresSelection, displayTrianglesSelection, etc.)
-
+// Carbon.getNodeIndex
 }
 
 void SEProteinDesignVisualModelBackbone::expandBounds(SBIAPosition3& bounds) const {
@@ -208,3 +203,4 @@ void SEProteinDesignVisualModelBackbone::removeNode(SEProteinDesignNodeCarbonAlp
 SEProteinDesignNodeCarbonAlpha* SEProteinDesignVisualModelBackbone::last() {
 	return pathNodeCarbonAlphaList.last();
 }
+

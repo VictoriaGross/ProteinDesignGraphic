@@ -111,16 +111,33 @@ public:
 
 //}@
 
-	void setBegin(SBPosition3&);
-	void setEnd(SBPosition3&);
-	SEProteinDesignNodeConstructionPoint getBegin();
-	SEProteinDesignNodeConstructionPoint getEnd();
+	/*void setBegin(SBPosition3&);
+	void setEnd(SBPosition3&);*/
+
+	void setCurrentEnd(SEProteinDesignNodeConstructionPoint* point);
+	void setCurrentBegin(SEProteinDesignNodeConstructionPoint* point);
+	SEProteinDesignNodeConstructionPoint* getCurrentBegin();
+	SEProteinDesignNodeConstructionPoint* getCurrentEnd();
+	
+	// Functions to manage the lists of construction points
+	void addBeginPoint(SEProteinDesignNodeConstructionPoint* point);
+	void addEndPoint(SEProteinDesignNodeConstructionPoint* point);
+	void removeEndPoint(SEProteinDesignNodeConstructionPoint* point);
+	void removeBeginPoint(SEProteinDesignNodeConstructionPoint* point);
+
 
 private:
 
-	SEProteinDesignNodeConstructionPoint beginHelix;
-	SEProteinDesignNodeConstructionPoint endHelix;
+	//The pointers to the beginning and end of the current helix
+	SEProteinDesignNodeConstructionPoint* beginHelixCurrent;
+	SEProteinDesignNodeConstructionPoint* endHelixCurrent;
 	SBPointer<SEProteinDesignVisualModelBackbone> path;
+	
+	// To manage the construction points
+	SBPointerList<SEProteinDesignNodeConstructionPoint> beginHelixList;
+	SBPointerList<SEProteinDesignNodeConstructionPoint> endHelixList;
+
+
 };
 
 
