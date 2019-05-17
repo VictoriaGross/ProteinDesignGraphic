@@ -9,14 +9,22 @@
 #include "SBStructuralEvent.hpp"
 #include "SBAction.hpp"
 
+// We will need to use construction points and carbon alpha
+#include "SEProteinDesignNodeConstructionPoint.hpp"
+#include "SEProteinDesignNodeCarbonAlpha.hpp"
+
+// We will need to access the backbone visual model
+#include "SEProteinDesignVisualModelBackbone.hpp"
+
+
 /// This class implements an editor
 
 class SEProteinDesignEditorHelix : public SBGEditor {
 
 	SB_CLASS
-	Q_OBJECT
+		Q_OBJECT
 
-public :
+public:
 
 	/// \name Constructors and destructors
 	//@{
@@ -101,10 +109,20 @@ public :
 
 	SEProteinDesignEditorHelixGUI*											getPropertyWidget() const;												///< Returns the property widget of the editor
 
-	//@}
+//}@
 
+	void setBegin(SBPosition3&);
+	void setEnd(SBPosition3&);
+	SEProteinDesignNodeConstructionPoint getBegin();
+	SEProteinDesignNodeConstructionPoint getEnd();
+
+private:
+
+	SEProteinDesignNodeConstructionPoint beginHelix;
+	SEProteinDesignNodeConstructionPoint endHelix;
+	SBPointer<SEProteinDesignVisualModelBackbone> path;
 };
 
 
-SB_REGISTER_TYPE(SEProteinDesignEditorHelix, "SEProteinDesignEditorHelix", "57600F16-8983-245C-78E6-A9811E2F3020");
+SB_REGISTER_TYPE(SEProteinDesignEditorHelix, "SEProteinDesignEditorHelix", "F85F4256-1864-1242-1761-E23D846D9941");
 SB_DECLARE_BASE_TYPE(SEProteinDesignEditorHelix, SBGEditor);

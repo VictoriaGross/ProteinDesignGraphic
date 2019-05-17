@@ -2,6 +2,8 @@
 #include "SAMSON.hpp"
 
 
+
+
 SEProteinDesignEditorHelix::SEProteinDesignEditorHelix() {
 
 	// SAMSON Element generator pro tip: this default constructor is called when unserializing the node, so it should perform all default initializations.
@@ -18,12 +20,13 @@ SEProteinDesignEditorHelix::~SEProteinDesignEditorHelix() {
 
 	propertyWidget->saveDefaultSettings();
 	delete propertyWidget;
-
+	/*beginHelix.~SEProteinDesignNodeConstructionPoint();
+	endHelix.~SEProteinDesignNodeConstructionPoint();*/
 }
 
 SEProteinDesignEditorHelixGUI* SEProteinDesignEditorHelix::getPropertyWidget() const { return static_cast<SEProteinDesignEditorHelixGUI*>(propertyWidget); }
 
-SBCContainerUUID SEProteinDesignEditorHelix::getUUID() const { return SBCContainerUUID("5FC5F15B-9248-F444-79CA-2F420AF794FA"); }
+SBCContainerUUID SEProteinDesignEditorHelix::getUUID() const { return SBCContainerUUID("496A08B6-A4D5-8CB4-774F-A57F9BC1E7D8"); }
 
 QString SEProteinDesignEditorHelix::getName() const { 
 
@@ -75,7 +78,7 @@ QString SEProteinDesignEditorHelix::getToolTip() const {
 	
 	// SAMSON Element generator pro tip: modify this function to have your editor display a tool tip in the SAMSON GUI when the mouse hovers the editor's icon
 
-	return QObject::tr("SAMSON Element generator pro tip: modify me"); 
+	return QObject::tr("Create an alpha-Helix by clicking and dragging"); 
 
 }
 
@@ -96,17 +99,23 @@ void SEProteinDesignEditorHelix::saveSettings(SBGSettings* settings) {
 }
 
 void SEProteinDesignEditorHelix::beginEditing() {
+	// We set the pointer path to zero as we begin editing (reinitialisation)
 
-	// SAMSON Element generator pro tip: SAMSON calls this function when your editor becomes active. 
-	// Implement this function if you need to prepare some data structures in order to be able to handle GUI or SAMSON events.
+	path = 0;
+	// If we don't edit end and beginning have the same value
+	SBPosition3 pos=getBegin().getPosition();
+	setEnd(pos);
 
 }
 
 void SEProteinDesignEditorHelix::endEditing() {
+	// We set the pointer path to zero when we finish to edit (reinitialisation)
 
-	// SAMSON Element generator pro tip: SAMSON calls this function immediately before your editor becomes inactive (for example when another editor becomes active). 
-	// Implement this function if you need to clean some data structures.
+	path = 0;
+	SBPosition3 pos = getBegin().getPosition();
+	setEnd(pos);
 
+	
 }
 
 void SEProteinDesignEditorHelix::getActions(SBVector<SBAction*>& actionVector) {
@@ -142,24 +151,126 @@ void SEProteinDesignEditorHelix::displayInterface() {
 }
 
 void SEProteinDesignEditorHelix::mousePressEvent(QMouseEvent* event) {
+	if (event->button() ==
+		Qt::MouseButton::LeftButton) {
+		if (path == 0 || (path != 0 && path->isErased())) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+			path = new SEProteinDesignVisualModelBackbone();
+			path->create();
+			SAMSON::getActiveLayer()->addChild(path());
 
+		}
+		SBPosition3 position = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+		setBegin(position);
+		
+
+		SAMSON::requestViewportUpdate();
+	}
 }
 
 void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
+	
+	//if (getBegin().getPosition() == getEnd().getPosition()) {
+		
+		// In this case we start a new helix
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
+		SBCamera* activeCamera = SAMSON::getActiveCamera();
+		SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+		// The coordinates of the Helix axis system in the General Fixed axis system
+		float MouseLength = (float)SBQuantity::length(MousePos.norm()).getValue();
+		SBVector3 MousePos2 = MousePos.normalizedVersion()*MouseLength;
+		SBPosition3 AxisV = getBegin().getPosition() - MousePos;
+		SBQuantity::length NormV = AxisV.norm();
+		SBVector3 AxisVnormed = AxisV.normalizedVersion();
+		SBVector3 AxisZ = activeCamera->getBasisZ();
+		//	SBQuantity::length NormZ = AxisZ.norm();
+		SBVector3 AxisZnormed = AxisZ.normalizedVersion();
+		SBVector3 AxisTnormed = AxisVnormed^AxisZnormed;
 
-}
+		// Let us enter the parameters of the helix
+		SBDQuantity::angstrom HelixLength = SBQuantity::angstrom(SBQuantity::length(NormV)); // The length of the Helix created by the user
+		SBQuantity::angstrom LengthBwCarbons = SBQuantity::angstrom(1.15); // The pace of the Helix
+		SBQuantity::angstrom HelixRadius = SBQuantity::angstrom(2.3); //The radius of the Helix
+		SBQuantity::radian RotationPace = SBQuantity::degree(100);
+		float NumberofCarbons = (float)SBQuantity::length(HelixLength).getValue() / ((float)SBQuantity::length(LengthBwCarbons).getValue());
+		int numb = floor(NumberofCarbons);
+		//// THE PROBLEM LIES IN THE TWO WHILE LOOPS
+
+		for (int i = 0; i < numb + 1; i += 1) {
+
+			//for (int i = 0; i < 1; i += 1) {
+			SBPosition3 CurrentCarbonV = i*LengthBwCarbons*AxisVnormed;
+			SBPosition3 CurrentCarbonT = HelixRadius*cos(i*RotationPace)*AxisTnormed;
+			SBPosition3 CurrentCarbonZ = HelixRadius*sin(i*RotationPace)*AxisZnormed;
+			SEProteinDesignNodeCarbonAlpha* CurrentCarbon = new SEProteinDesignNodeCarbonAlpha(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
+
+			path->addNode(CurrentCarbon);
+			SAMSON::requestViewportUpdate();
+			//path = 0;
+		}
+		SBPosition3 CurrentCarbonV = (numb + 1)*LengthBwCarbons*AxisVnormed;
+		SBPosition3 CurrentCarbonT = HelixRadius*cos((numb + 1)*RotationPace)*AxisTnormed;
+		SBPosition3 CurrentCarbonZ = HelixRadius*sin((numb + 1)*RotationPace)*AxisZnormed;
+		setEnd(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
+
+		SAMSON::requestViewportUpdate();
+	//}
+
+	//else {
+	//	// In this case we extend an helix
+
+	//	SBCamera* activeCamera = SAMSON::getActiveCamera();
+	//	SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
+	//	// The coordinates of the Helix axis system in the General Fixed axis system
+	//	float MouseLength = (float)SBQuantity::length(MousePos.norm()).getValue();
+	//	SBVector3 MousePos2 = MousePos.normalizedVersion()*MouseLength;
+
+	//	// We consider that we have clicked at the end of the first helix
+
+	//	SBPosition3 AxisV = getEnd().getPosition() - MousePos;
+	//	SBQuantity::length NormV = AxisV.norm();
+	//	SBVector3 AxisVnormed = AxisV.normalizedVersion();
+	//	SBVector3 AxisZ = activeCamera->getBasisZ();
+	//	//	SBQuantity::length NormZ = AxisZ.norm();
+	//	SBVector3 AxisZnormed = AxisZ.normalizedVersion();
+	//	SBVector3 AxisTnormed = AxisVnormed*AxisZnormed;
+
+	//	// Let us enter the parameters of the helix
+	//	SBDQuantity::angstrom HelixLength = SBQuantity::angstrom(SBQuantity::length(NormV)); // The length of the Helix created by the user
+	//	SBQuantity::angstrom LengthBwCarbons = SBQuantity::angstrom(1.15); // The pace of the Helix
+	//	SBQuantity::angstrom HelixRadius = SBQuantity::angstrom(2.3); //The radius of the Helix
+	//	SBQuantity::radian RotationPace = SBQuantity::degree(100);
+	//	float NumberofCarbons = (float)SBQuantity::length(HelixLength).getValue() / ((float)SBQuantity::length(LengthBwCarbons).getValue());
+	//	int numb = floor(NumberofCarbons);
+	//	//// THE PROBLEM LIES IN THE TWO WHILE LOOPS
+
+	//	for (int i = 1; i < numb + 1; i += 1) {
+	//		// The first carbon already exists
+
+	//		//for (int i = 0; i < 1; i += 1) {
+	//		SBPosition3 CurrentCarbonV = i*LengthBwCarbons*AxisVnormed;
+	//		SBPosition3 CurrentCarbonT = HelixRadius*cos(i*RotationPace)*AxisTnormed;
+	//		SBPosition3 CurrentCarbonZ = HelixRadius*sin(i*RotationPace)*AxisZnormed;
+	//		SEProteinDesignNodeCarbonAlpha* CurrentCarbon = new SEProteinDesignNodeCarbonAlpha(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
+
+	//		path->addNode(CurrentCarbon);
+	//		SAMSON::requestViewportUpdate();
+	//		//path = 0;
+	//	}
+	//	SBPosition3 CurrentCarbonV = (numb + 1)*LengthBwCarbons*AxisVnormed;
+	//	SBPosition3 CurrentCarbonT = HelixRadius*cos((numb + 1)*RotationPace)*AxisTnormed;
+	//	SBPosition3 CurrentCarbonZ = HelixRadius*sin((numb + 1)*RotationPace)*AxisZnormed;
+	//	setEnd(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
+
+	//	SAMSON::requestViewportUpdate();
+	//}
+
+	}
+
 
 void SEProteinDesignEditorHelix::mouseMoveEvent(QMouseEvent* event) {
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
-
+	
 }
 
 void SEProteinDesignEditorHelix::mouseDoubleClickEvent(QMouseEvent* event) {
@@ -177,9 +288,12 @@ void SEProteinDesignEditorHelix::wheelEvent(QWheelEvent* event) {
 }
 
 void SEProteinDesignEditorHelix::keyPressEvent(QKeyEvent* event) {
+	// It is possible to stop the current path by pressing Escape
+	if (event->key() == Qt::Key_Escape) {
+		path = 0;
+		event->accept();
+	}
 
-	// SAMSON Element generator pro tip: SAMSON redirects Qt events to the active editor. 
-	// Implement this function to handle this event with your editor.
 
 }
 
@@ -212,4 +326,25 @@ void SEProteinDesignEditorHelix::onStructuralEvent(SBStructuralEvent* documentEv
 	
 	// SAMSON Element generator pro tip: implement this function if you need to handle structural events
 
+}
+
+// Enables us to get the position of the construction points and the construction points themselves
+
+
+
+void SEProteinDesignEditorHelix::setBegin(SBPosition3& position) {
+	beginHelix.setPosition(position);
+ }
+
+void SEProteinDesignEditorHelix::setEnd(SBPosition3& position) {
+	endHelix.setPosition(position);
+}
+
+SEProteinDesignNodeConstructionPoint SEProteinDesignEditorHelix::getBegin() {
+	return(beginHelix.getPosition());
+}
+
+
+SEProteinDesignNodeConstructionPoint SEProteinDesignEditorHelix::getEnd() {
+	return(endHelix.getPosition());
 }
