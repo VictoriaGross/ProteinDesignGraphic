@@ -155,8 +155,11 @@ void SEProteinDesignEditorSpline::mouseReleaseEvent(QMouseEvent* event) {
     if (path == 0 || (path != 0 && path->isErased())) {
 
             path = new SEProteinDesignVisualModelCurve;
+            SAMSON::beginHolding("Create path");
+            SAMSON::hold(path());
             path->create();
             SAMSON::getActiveLayer()->addChild(path());
+            SAMSON::endHolding();
 
         }
 
@@ -166,15 +169,16 @@ void SEProteinDesignEditorSpline::mouseReleaseEvent(QMouseEvent* event) {
 
         // add a path node
 
-        SEProteinDesignNodeConstructionPoint* Node = new SEProteinDesignNodeConstructionPoint(position);
-        path->addNode(Node);
-
-        SAMSON::requestViewportUpdate(); // refresh the viewport
+        SAMSON::beginHolding("Add path node");
+        SEProteinDesignNodeConstructionPoint* node = new SEProteinDesignNodeConstructionPoint(position);
+        SAMSON::hold(node);
+        node->create();
+        path->addNode(node);
+        SAMSON::endHolding();
 
 }
 
 void SEProteinDesignEditorSpline::mouseMoveEvent(QMouseEvent* event) {
-
     if (selectedNode != 0) {
 
             SBPosition3 position = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
