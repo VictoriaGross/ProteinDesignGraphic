@@ -1,5 +1,8 @@
 #include "SEProteinDesignVisualModelCurve.hpp"
 #include "SAMSON.hpp"
+#include "SEProteinDesignEditorSpline.hpp"
+
+#include<deque>
 
 
 SEProteinDesignVisualModelCurve::SEProteinDesignVisualModelCurve() {
@@ -60,12 +63,181 @@ void SEProteinDesignVisualModelCurve::eraseImplementation() {
 
 }
 
+double SEProteinDesignVisualModelCurve::dist(float t, float x1,float x2,
+                                             float y1,float y2,float z1,float z2,float x3,float x0,
+                                             float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) {
+    double Ax= 2*x1 - 2*xa;
+    double Bx= x2-x0;
+    double Cx= 2*x0-5*x1+4*x2-x3;
+    double Dx = -x0+3*x1-3*x2+x3;
+    double Ay= 2*y1 - 2*ya;
+    double By= y2-y0;
+    double Cy= 2*y0-5*y1+4*y2-y3;
+    double Dy = -y0+3*y1-3*y2+y3;
+    double Az= 2*z1 - 2*za;
+    double Bz= z2-z0;
+    double Cz= 2*z0-5*z1+4*z2-z3;
+    double Dz = -z0+3*z1-3*z2+z3;
+
+    double calcx=0.25*(Ax*Ax+2*Ax*Bx*t+t*t*(2*Ax*Cx+pow(Bx,2))+t*t*t*(2*Ax*Dx+2*Bx*Cx)
+                       +t*t*t*t*(Cx*Cx+2*Bx*Dx)+t*t*t*t*t*(2*Cx*Dx)+t*t*t*t*t*t*(Dx*Dx));
+    double calcy=0.25*(Ay*Ay+2*Ay*By*t+t*t*(2*Ay*Cy+pow(By,2))+t*t*t*(2*Ay*Dy+2*By*Cy)
+                       +t*t*t*t*(Cy*Cy+2*By*Dy)+t*t*t*t*t*(2*Cy*Dy)+t*t*t*t*t*t*(Dy*Dy));
+    double calcz=0.25*(Az*Az+2*Az*Bz*t+t*t*(2*Az*Cz+pow(Bz,2))+t*t*t*(2*Az*Dz+2*Bz*Cz)
+                       +t*t*t*t*(Cz*Cz+2*Bz*Dz)+t*t*t*t*t*(2*Cz*Dz)+t*t*t*t*t*t*(Dz*Dz));
+
+    return calcx+calcy+calcz-d*d;
+
+}
+
+
+SBInterval SEProteinDesignVisualModelCurve::dist(SBInterval t, float x1,float x2,
+                                                 float y1,float y2,float z1,float z2,float x3,float x0,
+                                                 float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) {
+    SBInterval Ax(SBQuantity::dimensionless (2*x1 - 2*xa));
+    SBInterval Bx(SBQuantity::dimensionless (x2-x0));
+    SBInterval Cx(SBQuantity::dimensionless( 2*x0-5*x1+4*x2-x3));
+    SBInterval Dx(SBQuantity::dimensionless (-x0+3*x1-3*x2+x3));
+    SBInterval Ay(SBQuantity::dimensionless (2*y1 - 2*ya));
+    SBInterval By(SBQuantity::dimensionless(y2-y0));
+    SBInterval Cy(SBQuantity::dimensionless( 2*y0-5*y1+4*y2-y3));
+    SBInterval Dy(SBQuantity::dimensionless( -y0+3*y1-3*y2+y3));
+    SBInterval Az(SBQuantity::dimensionless( 2*z1 - 2*za));
+    SBInterval Bz(SBQuantity::dimensionless( z2-z0));
+    SBInterval Cz(SBQuantity::dimensionless( 2*z0-5*z1+4*z2-z3));
+    SBInterval Dz(SBQuantity::dimensionless( -z0+3*z1-3*z2+z3));
+
+    SBInterval calcx=0.25*(Ax*Ax+2*Ax*Bx*t+t*t*(2*Ax*Cx+Bx*Bx)+t*t*t*(2*Ax*Dx+2*Bx*Cx)
+                           +t*t*t*t*(Cx*Cx+2*Bx*Dx)+t*t*t*t*t*(2*Cx*Dx)+t*t*t*t*t*t*(Dx*Dx));
+    SBInterval calcy=0.25*(Ay*Ay+2*Ay*By*t+t*t*(2*Ay*Cy+By*By)+t*t*t*(2*Ay*Dy+2*By*Cy)
+                           +t*t*t*t*(Cy*Cy+2*By*Dy)+t*t*t*t*t*(2*Cy*Dy)+t*t*t*t*t*t*(Dy*Dy));
+    SBInterval calcz=0.25*(Az*Az+2*Az*Bz*t+t*t*(2*Az*Cz+Bz*Bz)+t*t*t*(2*Az*Dz+2*Bz*Cz)
+                           +t*t*t*t*(Cz*Cz+2*Bz*Dz)+t*t*t*t*t*(2*Cz*Dz)+t*t*t*t*t*t*(Dz*Dz));
+
+    return calcx+calcy+calcz-SBInterval(SBQuantity::dimensionless(d*d));
+
+}
+
+double SEProteinDesignVisualModelCurve::derivdist(float t, float x1,float x2,
+                                                  float y1,float y2,float z1,float z2,float x3,float x0,
+                                                  float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) {
+    double Ax= 2*x1 - 2*xa;
+    double Bx= x2-x0;
+    double Cx= 2*x0-5*x1+4*x2-x3;
+    double Dx = -x0+3*x1-3*x2+x3;
+    double Ay= 2*y1 - 2*ya;
+    double By= y2-y0;
+    double Cy= 2*y0-5*y1+4*y2-y3;
+    double Dy = -y0+3*y1-3*y2+y3;
+    double Az= 2*z1 - 2*za;
+    double Bz= z2-z0;
+    double Cz= 2*z0-5*z1+4*z2-z3;
+    double Dz = -z0+3*z1-3*z2+z3;
+
+    double calcx=0.25*(2*Ax*Bx+2*t*(2*Ax*Cx+pow(Bx,2))+3*t*t*(2*Ax*Dx+2*Bx*Cx)
+                       +4*t*t*t*(Cx*Cx+2*Bx*Dx)+5*t*t*t*t*(2*Cx*Dx)+6*t*t*t*t*t*(Dx*Dx));
+    double calcy=0.25*(2*Ay*By+2*t*(2*Ay*Cy+pow(By,2))+3*t*t*(2*Ay*Dy+2*By*Cy)
+                       +4*t*t*t*(Cy*Cy+2*By*Dy)+5*t*t*t*t*(2*Cy*Dy)+6*t*t*t*t*t*(Dy*Dy));
+    double calcz=0.25*(2*Az*Bz+2*t*(2*Az*Cz+pow(Bz,2))+3*t*t*(2*Az*Dz+2*Bz*Cz)
+                       +4*t*t*t*(Cz*Cz+2*Bz*Dz)+5*t*t*t*t*(2*Cz*Dz)+6*t*t*t*t*t*(Dz*Dz));
+
+    return calcx+calcy+calcz;
+}
+
+double SEProteinDesignVisualModelCurve::Newton(float x1,float x2,
+                                               float y1,float y2,float z1,float z2,float x3,float x0,
+                                               float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) {
+    int n =0;
+    double sol = 1;
+    double nsol;
+    if (sqrt(dist(1,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,0,xa,ya,za))<d) {
+        return -1;
+    }
+    while (sqrt((sol-nsol)*(sol-nsol))>0.1 || n<20) {
+        nsol = sol - (dist(sol,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,d,xa,ya,za)/derivdist(sol,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,d,xa,ya,za));
+        sol=nsol;
+        n++;
+    }
+    return nsol;
+}
+
+double SEProteinDesignVisualModelCurve::Dichotomie(float x1,float x2,
+                                                   float y1,float y2,float z1,float z2,float x3,float x0,
+                                                   float y3,float y0,float z3,float z0, float d, float xa, float ya, float za, float a, float b) {
+    if (sqrt(dist(1,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,0,xa,ya,za))<d) {
+        return -1;
+    } else {
+        float m;
+        while (b-a>0.01) {
+            m = (a+b)/2;
+            if (dist(m,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,d,xa,ya,za)*dist(a,x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,d,xa,ya,za)<=0) {
+                b=m;
+            } else {
+                a=m;
+            }
+        }
+    }
+    return (a+b)/2;
+}
+
+double SEProteinDesignVisualModelCurve::Dichotomie(float x1,float x2,
+                                                   float y1,float y2,float z1,float z2,float x3,float x0,
+                                                   float y3,float y0,float z3,float z0, float d, float xa, float ya, float za, SBInterval t) {
+
+    std::cout << "Starting dichotomy" << std::endl;
+    std::cout << "x0=" << x0 << std::endl;
+    std::cout << "y0=" << x0 << std::endl;
+    std::cout << "z0=" << y0 << std::endl;
+    std::cout << "x1=" << x1 << std::endl;
+    std::cout << "y1=" << x1 << std::endl;
+    std::cout << "z1=" << y1 << std::endl;
+    std::cout << "x2=" << x2 << std::endl;
+    std::cout << "y2=" << x2 << std::endl;
+    std::cout << "z2=" << y2 << std::endl;
+    std::cout << "x3=" << x3 << std::endl;
+    std::cout << "y3=" << x3 << std::endl;
+    std::cout << "z3=" << y3 << std::endl;
+
+
+    std::deque<SBInterval> intervalQueue;
+    intervalQueue.push_back(t);
+
+    while (!intervalQueue.empty()) {
+
+        SBInterval timeInterval = intervalQueue.front();
+        intervalQueue.pop_front();
+        SBInterval distBounds = dist(timeInterval, x1, x2, y1, y2, z1, z2, x3, x0, y3, y0, z3, z0,  d,  xa,  ya,  za);
+        double d0 = dist(timeInterval.center().getValue(), x1, x2, y1, y2, z1, z2, x3, x0, y3, y0, z3, z0,  d,  xa,  ya,  za);
+        std::cout << timeInterval << ":  " << distBounds << std::endl;
+        std::cout << timeInterval.center().getValue() << ":  " << d0 << std::endl;
+        std::cout << std::endl;
+
+        if (distBounds.i[0]*distBounds.i[1]>SBQuantity::dimensionless(0.0)) {
+
+            if (intervalQueue.empty()) return -1;
+            else continue;
+
+        }
+
+        if (timeInterval.diameter() < SBQuantity::dimensionless(1e-10)) return timeInterval.center().getValue();
+
+        SBQuantity::dimensionless middle = timeInterval.center();
+        intervalQueue.push_front(SBInterval(middle,timeInterval.i[1]));
+        intervalQueue.push_front(SBInterval(timeInterval.i[0],middle));
+
+    }
+
+    return -1;
+
+}
+
 void SEProteinDesignVisualModelCurve::display() {
 
     if (ConstructionNodeList.empty()) return;
 
     unsigned int numberOfNodes = ConstructionNodeList.size();
     int n = 50;
+
 
 
     // allocate arrays and initialize them to zeros
@@ -84,6 +256,10 @@ void SEProteinDesignVisualModelCurve::display() {
     // fill in the arrays
 
     unsigned int currentIndex = 0;
+    std::vector<float> positionCarbon;
+    float xa;
+    float ya;
+    float za;
 
 
     SB_FOR(SEProteinDesignNodeConstructionPoint* currentNode, ConstructionNodeList){
@@ -101,54 +277,12 @@ void SEProteinDesignVisualModelCurve::display() {
         colorData[4 * currentIndex + 1] = 0.0f;
         colorData[4 * currentIndex + 2] = 0.0f;
         colorData[4 * currentIndex + 3] = 1.0f;
+        xa=positionData[0];
+        ya=positionData[1];
+        za=positionData[2];
+
 
         flagData[currentIndex] = currentNode->getInheritedFlags() | getInheritedFlags();
-
-        //spline nodes
-
-        if (currentIndex>2){
-            float x3 = positionData[3*currentIndex+0];
-            float x2 = positionData[3*(currentIndex-1)+0];
-            float x1 = positionData[3*(currentIndex-2)+0];
-            float x0 = positionData[3*(currentIndex-3)+0];
-
-            float y3 = positionData[3*currentIndex+1];
-            float y2 = positionData[3*(currentIndex-1)+1];
-            float y1 = positionData[3*(currentIndex-2)+1];
-            float y0 = positionData[3*(currentIndex-3)+1];
-
-            float z3 = positionData[3*currentIndex+2];
-            float z2 = positionData[3*(currentIndex-1)+2];
-            float z1 = positionData[3*(currentIndex-2)+2];
-            float z0 = positionData[3*(currentIndex-3)+2];
-
-
-            for(int i=0;i<n;i++){
-                float t = float(i+1)/(n+1);
-
-                float a = 0.5f*(-t+2*t*t-t*t*t);
-                float b = 0.5f*(2-5*t*t+3*t*t*t);
-                float c = 0.5f*(t+4*t*t-3*t*t*t);
-                float d = 0.5f*(-t*t+t*t*t);
-
-                positionSpline[3*n*(currentIndex-2)+3*i+0] = a*x0+b*x1+c*x2+d*x3;
-                positionSpline[3*n*(currentIndex-2)+3*i+1] = a*y0+b*y1+c*y2+d*y3;
-                positionSpline[3*n*(currentIndex-2)+3*i+2] = a*z0+b*z1+c*z2+d*z3;
-
-
-                radiusSpline[n*(currentIndex-2)+i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
-
-                colorSpline[4*n*(currentIndex-2)+4*i+0] = 1.0f;
-                colorSpline[4*n*(currentIndex-2)+4*i+1] = 1.0f;
-                colorSpline[4*n*(currentIndex-2)+4*i+2] = 0.0f;
-                colorSpline[4*n*(currentIndex-2)+4*i+3] = 1.0f;
-
-                flagSpline[n*(currentIndex-2)+i] = getInheritedFlags();
-            }
-        }
-
-
-
 
         currentIndex++;
     }
@@ -170,6 +304,31 @@ void SEProteinDesignVisualModelCurve::display() {
         float z1 = positionData[2];
         float z0 = positionData[2];
 
+        xa =x1;
+        ya =y1;
+        za =z1;
+        double t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(0), SBQuantity::dimensionless(1))); //finding the first t such as the distance between two AA is 3.8 A
+        double oldt=0;
+
+        while ((t>0) && (t!=-1) && (t<1-0.03)) { // while we can add a carbon alpha
+            float a = 0.5f*(-t+2*t*t-t*t*t);
+            float b = 0.5f*(2-5*t*t+3*t*t*t);
+            float c = 0.5f*(t+4*t*t-3*t*t*t);
+            float d = 0.5f*(-t*t+t*t*t);
+
+            xa=a*x0+b*x1+c*x2+d*x3;
+            ya=a*y0+b*y1+c*y2+d*y3;
+            za=a*z0+b*z1+c*z2+d*z3;
+
+            positionCarbon.push_back(xa); //adding the coordonnates
+            positionCarbon.push_back(ya);
+            positionCarbon.push_back(za);
+            SBPosition3 positionC=SBPosition3( SBQuantity::length(xa),SBQuantity::length(ya),SBQuantity::length(za));
+            SEProteinDesignNodeCarbonAlpha* Carbon = new SEProteinDesignNodeCarbonAlpha(positionC);
+            CarbonAlphaList.addReferenceTarget(Carbon);
+            oldt = t+0.02;
+            t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(oldt), SBQuantity::dimensionless(1))); // finding new t
+        }
 
         for(int i=0;i<n;i++){
             float t = float(i+1)/(n+1);
@@ -195,6 +354,9 @@ void SEProteinDesignVisualModelCurve::display() {
 
         }
     }
+
+
+
     if(numberOfNodes>2){
 
         float x3 = positionData[6];
@@ -212,6 +374,28 @@ void SEProteinDesignVisualModelCurve::display() {
         float z1 = positionData[2];
         float z0 = positionData[2];
 
+        double t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(0), SBQuantity::dimensionless(1))); //finding the first t such as the distance between two AA is 3.8 A
+        double oldt=0;
+
+        while ((t>0) && (t!=-1) && (t<1-0.03)) { // while we can add a carbon alpha
+            float a = 0.5f*(-t+2*t*t-t*t*t);
+            float b = 0.5f*(2-5*t*t+3*t*t*t);
+            float c = 0.5f*(t+4*t*t-3*t*t*t);
+            float d = 0.5f*(-t*t+t*t*t);
+
+            xa=a*x0+b*x1+c*x2+d*x3;
+            ya=a*y0+b*y1+c*y2+d*y3;
+            za=a*z0+b*z1+c*z2+d*z3;
+
+            positionCarbon.push_back(xa); //adding the coordonnates
+            positionCarbon.push_back(ya);
+            positionCarbon.push_back(za);
+            SBPosition3 positionC=SBPosition3( SBQuantity::length(xa),SBQuantity::length(ya),SBQuantity::length(za));
+            SEProteinDesignNodeCarbonAlpha* Carbon = new SEProteinDesignNodeCarbonAlpha(positionC);
+            CarbonAlphaList.addReferenceTarget(Carbon);
+            oldt = t+0.02;
+            t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(oldt), SBQuantity::dimensionless(1))); // finding new t
+        }
 
         for(int i=0;i<n;i++){
             float t = float(i+1)/(n+1);
@@ -236,7 +420,74 @@ void SEProteinDesignVisualModelCurve::display() {
             flagSpline[i] = getInheritedFlags();
         }
 
+        for (int currentIndex; currentIndex<numberOfNodes; currentIndex++ ) {
 
+            //spline nodes
+
+            if (currentIndex>2){
+                float x3 = positionData[3*currentIndex+0];
+                float x2 = positionData[3*(currentIndex-1)+0];
+                float x1 = positionData[3*(currentIndex-2)+0];
+                float x0 = positionData[3*(currentIndex-3)+0];
+
+                float y3 = positionData[3*currentIndex+1];
+                float y2 = positionData[3*(currentIndex-1)+1];
+                float y1 = positionData[3*(currentIndex-2)+1];
+                float y0 = positionData[3*(currentIndex-3)+1];
+
+                float z3 = positionData[3*currentIndex+2];
+                float z2 = positionData[3*(currentIndex-1)+2];
+                float z1 = positionData[3*(currentIndex-2)+2];
+                float z0 = positionData[3*(currentIndex-3)+2];
+
+                double t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(0), SBQuantity::dimensionless(1))); //finding the first t such as the distance between two AA is 3.8 A
+                double oldt=0;
+
+                while (t!=-1) { // while we can add a carbon alpha
+                    float a = 0.5f*(-t+2*t*t-t*t*t);
+                    float b = 0.5f*(2-5*t*t+3*t*t*t);
+                    float c = 0.5f*(t+4*t*t-3*t*t*t);
+                    float d = 0.5f*(-t*t+t*t*t);
+
+                    xa=a*x0+b*x1+c*x2+d*x3;
+                    ya=a*y0+b*y1+c*y2+d*y3;
+                    za=a*z0+b*z1+c*z2+d*z3;
+
+                    positionCarbon.push_back(xa); //adding the coordonnates
+                    positionCarbon.push_back(ya);
+                    positionCarbon.push_back(za);
+                    SBPosition3 positionC=SBPosition3( SBQuantity::length(xa),SBQuantity::length(ya),SBQuantity::length(za));
+                    SEProteinDesignNodeCarbonAlpha* Carbon = new SEProteinDesignNodeCarbonAlpha(positionC);
+                    CarbonAlphaList.addReferenceTarget(Carbon);
+                    oldt = t;
+                    t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(oldt), SBQuantity::dimensionless(1))); // finding new t
+                }
+
+
+                for(int i=0;i<n;i++){
+                    float t = float(i+1)/(n+1);
+
+                    float a = 0.5f*(-t+2*t*t-t*t*t);
+                    float b = 0.5f*(2-5*t*t+3*t*t*t);
+                    float c = 0.5f*(t+4*t*t-3*t*t*t);
+                    float d = 0.5f*(-t*t+t*t*t);
+
+                    positionSpline[3*n*(currentIndex-2)+3*i+0] = a*x0+b*x1+c*x2+d*x3;
+                    positionSpline[3*n*(currentIndex-2)+3*i+1] = a*y0+b*y1+c*y2+d*y3;
+                    positionSpline[3*n*(currentIndex-2)+3*i+2] = a*z0+b*z1+c*z2+d*z3;
+
+
+                    radiusSpline[n*(currentIndex-2)+i] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
+
+                    colorSpline[4*n*(currentIndex-2)+4*i+0] = 1.0f;
+                    colorSpline[4*n*(currentIndex-2)+4*i+1] = 1.0f;
+                    colorSpline[4*n*(currentIndex-2)+4*i+2] = 0.0f;
+                    colorSpline[4*n*(currentIndex-2)+4*i+3] = 1.0f;
+
+                    flagSpline[n*(currentIndex-2)+i] = getInheritedFlags();
+                }
+            }
+        }
 
         x3 = positionData[3*(numberOfNodes-1)+0];
         x2 = positionData[3*(numberOfNodes-1)+0];
@@ -252,6 +503,31 @@ void SEProteinDesignVisualModelCurve::display() {
         z2 = positionData[3*(numberOfNodes-1)+2];
         z1 = positionData[3*(numberOfNodes-2)+2];
         z0 = positionData[3*(numberOfNodes-3)+2];
+
+        t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(0), SBQuantity::dimensionless(1))); //finding the first t such as the distance between two AA is 3.8 A
+        oldt=0;
+
+        while ((t>0) && (t!=-1) && (t<1-0.03)) { // while we can add a carbon alpha
+            float a = 0.5f*(-t+2*t*t-t*t*t);
+            float b = 0.5f*(2-5*t*t+3*t*t*t);
+            float c = 0.5f*(t+4*t*t-3*t*t*t);
+            float d = 0.5f*(-t*t+t*t*t);
+
+            xa=a*x0+b*x1+c*x2+d*x3;
+            ya=a*y0+b*y1+c*y2+d*y3;
+            za=a*z0+b*z1+c*z2+d*z3;
+
+            positionCarbon.push_back(xa); //adding the coordonnates
+            positionCarbon.push_back(ya);
+            positionCarbon.push_back(za);
+            SBPosition3 positionC=SBPosition3( SBQuantity::length(xa),SBQuantity::length(ya),SBQuantity::length(za));
+            SEProteinDesignNodeCarbonAlpha* Carbon = new SEProteinDesignNodeCarbonAlpha(positionC);
+            CarbonAlphaList.addReferenceTarget(Carbon);
+            oldt = t+0.02;
+            t= Dichotomie(x1,x2,y1,y2,z1,z2,x3,x0,y3,y0,z3,z0,380,xa,ya,za, SBInterval(SBQuantity::dimensionless(oldt), SBQuantity::dimensionless(1))); // finding new t
+        }
+
+
 
 
         for(int i=0;i<n;i++){
@@ -278,10 +554,30 @@ void SEProteinDesignVisualModelCurve::display() {
         }
     }
 
+    int numberOfCarbon = positionCarbon.size()/3;
+    float* positionCarbonA = new float[3 * numberOfCarbon]();
+    float* radiusCarbonA = new float[numberOfCarbon]();
+    float* colorCarbonA = new float[4 * numberOfCarbon]();
+    unsigned int* flagCarbonA = new unsigned int[numberOfCarbon]();
+
+    for (int i=0; i<numberOfCarbon; i++) {
+        positionCarbonA[3*i+0]=positionCarbon[3*i+0];
+        positionCarbonA[3*i+1]=positionCarbon[3*i+1];
+        positionCarbonA[3*i+2]=positionCarbon[3*i+2];
+        radiusCarbonA[i] = (float)SBQuantity::length(SBQuantity::angstrom(0.2)).getValue();
+        colorCarbonA[4 * i + 0] = 1.0f;
+        colorCarbonA[4 * i + 1] = 1.0f;
+        colorCarbonA[4 * i + 2] = 1.0f;
+        colorCarbonA[4 * i + 3] = 1.0f;
+        flagCarbonA[i] = getInheritedFlags();
+    }
+
+
     // display
 
     SAMSON::displaySpheres(numberOfNodes, positionData, radiusData, colorData, flagData);
     SAMSON::displaySpheres(n*(numberOfNodes-1), positionSpline, radiusSpline, colorSpline, flagSpline);
+    SAMSON::displaySpheres(numberOfCarbon, positionCarbonA, radiusCarbonA,colorCarbonA,flagCarbonA);
 
     // clean
 
@@ -388,68 +684,29 @@ void SEProteinDesignVisualModelCurve::onStructuralEvent(SBStructuralEvent* docum
 
 }
 
-class AddNodeCommand : public SBCUndoCommand {
-
-public:
-
-    AddNodeCommand(SEProteinDesignVisualModelCurve* curve, SEProteinDesignNodeConstructionPoint* node) { this->curve=curve; this->node = node; }
-
-    /// \name Undo / Redo
-    //@{
-
-    virtual void												redo() { curve->addNode(node());}
-    virtual void												undo() { curve->removeNode(node());}
-
-    virtual std::string											getName() const { return "Add node"; }
-
-private:
-
-    SBPointer<SEProteinDesignVisualModelCurve>                  curve;
-    SBPointer<SEProteinDesignNodeConstructionPoint>             node;
-
-};
-
-class RemoveNodeCommand : public SBCUndoCommand {
-
-public:
-
-    RemoveNodeCommand(SEProteinDesignVisualModelCurve* curve, SEProteinDesignNodeConstructionPoint* node) { this->curve=curve; this->node = node; }
-
-    /// \name Undo / Redo
-    //@{
-
-    virtual void												redo() { curve->removeNode(node()); }
-    virtual void												undo() { curve->addNode(node()); }
-
-    virtual std::string											getName() const { return "Remove node"; }
-
-private:
-
-    SBPointer<SEProteinDesignVisualModelCurve>                  curve;
-    SBPointer<SEProteinDesignNodeConstructionPoint>             node;
-
-};
-
-void SEProteinDesignVisualModelCurve::addNode(SEProteinDesignNodeConstructionPoint* node){
-    if (!node) return;
-
-    if (SAMSON::isHolding()) SAMSON::addUndoCommand(new AddNodeCommand(this,node));
-    ConstructionNodeList.addReferenceTarget(node);
-    SAMSON::requestViewportUpdate();
-
+void SEProteinDesignVisualModelCurve::addNode(SEProteinDesignNodeConstructionPoint* Node){
+    if (!Node) return;
+    ConstructionNodeList.addReferenceTarget(Node);
 }
 
-void SEProteinDesignVisualModelCurve::removeNode(SEProteinDesignNodeConstructionPoint* node){
-    if (!node) return;
+void SEProteinDesignVisualModelCurve::removeNode(SEProteinDesignNodeConstructionPoint* Node){
+    if (!Node) return;
+    ConstructionNodeList.removeReferenceTarget(Node);
+}
 
-    if (SAMSON::isHolding()) SAMSON::addUndoCommand(new RemoveNodeCommand(this,node));
-    ConstructionNodeList.removeReferenceTarget(node);
-    SAMSON::requestViewportUpdate();
+void SEProteinDesignVisualModelCurve::addCarbon(SEProteinDesignNodeCarbonAlpha* Carbon){
+    if (!Carbon) return;
+    CarbonAlphaList.addReferenceTarget(Carbon);
+}
 
+void SEProteinDesignVisualModelCurve::removeCarbon(SEProteinDesignNodeCarbonAlpha* Carbon){
+    if (!Carbon) return;
+    CarbonAlphaList.removeReferenceTarget(Carbon);
 }
 
 void SEProteinDesignVisualModelCurve::getNodes( SBNodeIndexer& nodeIndexer) {
-	SB_FOR(SEProteinDesignNodeCarbonAlpha* currentnode, pathNodeCarbonAlphaList) {
-		nodeIndexer.addNode(currentnode); 
-	}
+    SB_FOR(SEProteinDesignNodeCarbonAlpha* currentnode, CarbonAlphaList) {
+        nodeIndexer.addNode(currentnode);
+    }
 }
+

@@ -62,15 +62,35 @@ public :
 	virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
 	virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
 	virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
-	virtual void												getNodes(SBNodeIndexer& nodeIndexer); 
+    virtual void												getNodes(SBNodeIndexer& nodeIndexer);
 	//@}
 
     void addNode(SEProteinDesignNodeConstructionPoint* ConstructionNode);
     void removeNode(SEProteinDesignNodeConstructionPoint* ConstructionNode);
+    void addCarbon(SEProteinDesignNodeCarbonAlpha* Carbon) ;
+    void removeCarbon(SEProteinDesignNodeCarbonAlpha* Carbon);
+    double dist(float t, float x1,float x2,
+                float y1,float y2,float z1,float z2,float x3,float x0,
+                float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) ;
+    SBInterval dist(SBInterval t, float x1,float x2,
+                float y1,float y2,float z1,float z2,float x3,float x0,
+                float y3,float y0,float z3,float z0, float d, float xa, float ya, float za) ;
+    double derivdist(float t, float x1,float x2,
+                     float y1,float y2,float z1,float z2,float x3,float x0,
+                     float y3,float y0,float z3,float z0, float d, float xa, float ya, float za);
+    double Newton(float x1,float x2,
+    float y1,float y2,float z1,float z2,float x3,float x0,
+    float y3,float y0,float z3,float z0, float d, float xa, float ya, float za);
+    double Dichotomie(float x1,float x2,
+                      float y1,float y2,float z1,float z2,float x3,float x0,
+                      float y3,float y0,float z3,float z0, float d, float xa, float ya, float za, float a, float b);
+    double Dichotomie(float x1,float x2,
+                      float y1,float y2,float z1,float z2,float x3,float x0,
+                      float y3,float y0,float z3,float z0, float d, float xa, float ya, float za, SBInterval t);
 
 private :
     SBPointerList<SEProteinDesignNodeConstructionPoint> ConstructionNodeList;
-	SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
+    SBPointerList<SEProteinDesignNodeCarbonAlpha> CarbonAlphaList;
 
 
 };
