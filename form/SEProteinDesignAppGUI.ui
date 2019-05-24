@@ -21,10 +21,19 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Results</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="table"/>
+   </item>
+   <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>Welcome to Protein Design! 
- You can use editors to draw curves and alpha helices.</string>
+      <string>TextLabel</string>
      </property>
     </widget>
    </item>
