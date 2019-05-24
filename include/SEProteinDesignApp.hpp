@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "SBDApp.hpp"
 #include "SEProteinDesignAppGUI.hpp"
@@ -15,28 +15,31 @@
 
 class SEProteinDesignApp : public SBDApp {
 
-	SB_CLASS
+    SB_CLASS
 
 public :
 
-	/// \name Constructors and destructors
-	//@{
+    /// \name Constructors and destructors
+    //@{
 
-	SEProteinDesignApp();																													///< Constructs an app
-	virtual ~SEProteinDesignApp();																											///< Destructs the app
+    SEProteinDesignApp();																													///< Constructs an app
+    virtual ~SEProteinDesignApp();																											///< Destructs the app
 
-	//@}
+    //@}
 
-	/// \name GUI
-	//@{
+    /// \name GUI
+    //@{
 
-	SEProteinDesignAppGUI*											getGUI() const;															///< Returns a pointer to the GUI of the app
+    SEProteinDesignAppGUI*											getGUI() const;															///< Returns a pointer to the GUI of the app
 
-	//@}
+    //@}
 
-	SBNodeIndexer getListNodes();
-private: 
-	SBPointerList< SBMVisualModel > const* visualModelList;
+    SBNodeIndexer getListNodes();
+        void FindAminoAcid();
+        double distance(SBAtom* atom1,SBAtom* atom2);
+
+private:
+    SBPointerList< SBMVisualModel > const* visualModelList;
 
 };
 
