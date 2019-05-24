@@ -243,7 +243,7 @@ string** SEProteinDesignApp::prediction()
     int input_shape = 105;
 
     // Write the distances file
-    write(distances, protein_size, input_shape);
+    prediction_write(distances, protein_size, input_shape);
 
     // Call the script (depending on the platform)
 
@@ -263,7 +263,7 @@ string** SEProteinDesignApp::prediction()
 
 
     // Get back the predicted_protein.csv
-    double** predicted_protein = read();
+    double** predicted_protein = prediction_read();
 
     // Transform it into an array of strings
     Sequence seq(predicted_protein, protein_size);

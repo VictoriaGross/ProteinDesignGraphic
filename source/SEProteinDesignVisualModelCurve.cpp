@@ -564,11 +564,11 @@ void SEProteinDesignVisualModelCurve::display() {
         positionCarbonA[3*i+0]=positionCarbon[3*i+0];
         positionCarbonA[3*i+1]=positionCarbon[3*i+1];
         positionCarbonA[3*i+2]=positionCarbon[3*i+2];
-        radiusCarbonA[i] = (float)SBQuantity::length(SBQuantity::angstrom(0.2)).getValue();
-        colorCarbonA[4 * i + 0] = 1.0f;
-        colorCarbonA[4 * i + 1] = 1.0f;
-        colorCarbonA[4 * i + 2] = 1.0f;
-        colorCarbonA[4 * i + 3] = 1.0f;
+        radiusCarbonA[i] = (float)SBQuantity::length(SBQuantity::angstrom(0.25)).getValue();
+        colorCarbonA[4 * i + 0] = 0.0f;
+        colorCarbonA[4 * i + 1] = 0.0f;
+        colorCarbonA[4 * i + 2] = 0.0f;
+        colorCarbonA[4 * i + 3] = 0.0f;
         flagCarbonA[i] = getInheritedFlags();
     }
 

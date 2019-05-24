@@ -44,7 +44,7 @@ public :
     double distance(SBAtom* atom1,SBAtom* atom2);
 
     void prediction_write(double** distances, int protein_size, int input_shape);
-    void prediction_read();
+    double** prediction_read();
 
     std::string** prediction();
 
