@@ -204,3 +204,13 @@ SEProteinDesignNodeCarbonAlpha* SEProteinDesignVisualModelBackbone::last() {
 	return pathNodeCarbonAlphaList.last();
 }
 
+SBPointerList<SEProteinDesignNodeCarbonAlpha> SEProteinDesignVisualModelBackbone::getNodes() {
+	return pathNodeCarbonAlphaList;
+}
+
+
+void SEProteinDesignVisualModelBackbone::getNodes(SBNodeIndexer& nodeIndexer) {
+	SB_FOR(SEProteinDesignNodeCarbonAlpha* currentnode, pathNodeCarbonAlphaList) {
+		nodeIndexer.addNode(currentnode);
+	}
+}

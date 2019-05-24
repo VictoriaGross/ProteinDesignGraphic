@@ -89,7 +89,7 @@ SBNode::Type SEProteinDesignNodeCarbonAlpha::getType() const {
 
 	// SAMSON Element generator pro tip: modify this function to return the node type closest to your node's type.
 
-	return SBNode::Undefined; 
+	return SBNode::Atom; 
 	
 }
 

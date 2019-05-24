@@ -1,16 +1,16 @@
 #pragma once
 
 
-#include "SBGFileExporter.hpp" 
-#include "ui_SEProteinDesignExporterGUI.h"
+#include "SBGApp.hpp" 
+#include "ui_SEProteinDesignAppGUI.h"
 
-class SEProteinDesignExporter;
+class SEProteinDesignApp;
 
-/// This class implements the GUI of the exporter
+/// This class implements the GUI of the app
 
-// SAMSON Element generator pro tip: add GUI functionality in this class. The non-GUI functionality should go in the SEProteinDesignExporter class
+// SAMSON Element generator pro tip: add GUI functionality in this class. The non-GUI functionality should go in the SEProteinDesignApp class
 
-class SEProteinDesignExporterGUI : public SBGFileExporter {
+class SEProteinDesignAppGUI : public SBGApp {
 
 	Q_OBJECT
 
@@ -19,15 +19,15 @@ public:
 	/// \name Constructors and destructors
 	//@{
 
-	SEProteinDesignExporterGUI(SEProteinDesignExporter* t);																			///< Constructs a GUI for the exporter
-	~SEProteinDesignExporterGUI();																												///< Destructs the GUI of the exporter
+	SEProteinDesignAppGUI(SEProteinDesignApp* t);																									///< Constructs a GUI for the app
+	virtual ~SEProteinDesignAppGUI();																										///< Destructs the GUI of the app
 
 	//@}
 
-	/// \name Exporter
+	/// \name App
 	//@{
 
-	SEProteinDesignExporter*												getExporter() const;													///< Returns a pointer to the exporter
+	SEProteinDesignApp*												getApp() const;															///< Returns a pointer to the app
 
 	//@}
 
@@ -50,9 +50,13 @@ public:
 
 	//@}
 
+public slots:
+
+	// SAMSON Element generator pro tip: add slots here to interact with your app
+
 private:
 
-	Ui::SEProteinDesignExporterGUIClass									ui;
+	Ui::SEProteinDesignAppGUIClass									ui;
 
 };
 

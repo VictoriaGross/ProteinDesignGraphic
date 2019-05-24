@@ -448,4 +448,8 @@ void SEProteinDesignVisualModelCurve::removeNode(SEProteinDesignNodeConstruction
 
 }
 
-
+void SEProteinDesignVisualModelCurve::getNodes( SBNodeIndexer& nodeIndexer) {
+	SB_FOR(SEProteinDesignNodeCarbonAlpha* currentnode, pathNodeCarbonAlphaList) {
+		nodeIndexer.addNode(currentnode); 
+	}
+}

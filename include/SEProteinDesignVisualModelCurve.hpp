@@ -6,6 +6,7 @@
 #include "SBDocumentEvent.hpp"
 #include "SBStructuralEvent.hpp"
 #include "SEProteinDesignNodeConstructionPoint.hpp"
+#include "SEProteinDesignNodeCarbonAlpha.hpp"
 
 
 /// This class implements a visual model
@@ -61,7 +62,7 @@ public :
 	virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
 	virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
 	virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
-
+	virtual void												getNodes(SBNodeIndexer& nodeIndexer); 
 	//@}
 
     void addNode(SEProteinDesignNodeConstructionPoint* ConstructionNode);
@@ -69,6 +70,7 @@ public :
 
 private :
     SBPointerList<SEProteinDesignNodeConstructionPoint> ConstructionNodeList;
+	SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
 
 
 };

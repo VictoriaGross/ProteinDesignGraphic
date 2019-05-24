@@ -63,13 +63,16 @@ public :
 	virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
 	virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
 	virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
-
+	virtual void												getNodes(SBNodeIndexer& nodeIndexer);
 	//@}
 
 	// The helix stores a list of CarbonAlpha																																				
 	void addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha);
 	void removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarboneAlpha);
 	SEProteinDesignNodeCarbonAlpha* last();
+
+	// Returns the List of Carbon Alphae
+	SBPointerList<SEProteinDesignNodeCarbonAlpha> getNodes();
 
 private: 
 	// The helix stores a list of CarbonAlpha
