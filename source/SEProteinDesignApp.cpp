@@ -2,11 +2,12 @@
 #include "SEProteinDesignAppGUI.hpp"
 #include "SAMSON.hpp"
 #include "SEProteinDesignNodeCarbonAlpha.hpp"
-#include <fstream>
 #include <filesystem>
 #include "QDirIterator"
 #include "SBAtom.hpp"
 #include "SBList.hpp"
+
+using namespace std;
 
 SEProteinDesignApp::SEProteinDesignApp() {
 
@@ -150,7 +151,7 @@ SBNodeIndexer SEProteinDesignApp::getListNodes() {
 }
 
 
-void  SEProteinDesignApp::FindAminoAcid() {
+double**  SEProteinDesignApp::findAminoAcid() {
 
     //On recupere les alpha carbone des amino acid
     SBNodeIndexer listCA;
@@ -183,37 +184,90 @@ void  SEProteinDesignApp::FindAminoAcid() {
         }
     }
 
-
-
-    ofstream fichier("/users/misc-b/INF473N-2019/youssef.salib/test_resolution.txt", ios::out | ios::ate);  //declaration du flux et ouverture du fichier
-
-
-    int compteur_matrices = 0;
-
-    for (int current_first= 0; current_first <= n-15; current_first ++){
-
-        for (int i = 0; i< 15; i++){
-
-            for(int j =0; j< 14-i; j++){
-
-                fichier << list_alpha_carbon_distance[current_first + i][j] << ",";
-            }
-            fichier << endl;
-        }
-        compteur_matrices++;
-        fichier.seekp(-1, ios::end);
-        fichier << endl;
-        fichier << endl;
-
-        current_first ++;
-    }
-
-    fichier.close();
-
+    return list_alpha_carbon_distance;
 }
 
 double SEProteinDesignApp :: distance(SBAtom* atom1,SBAtom* atom2){
 
     return SBQuantity::angstrom((atom1->getPosition()-atom2->getPosition()).norm()).getValue();
 
+}
+
+void SEProteinDesignApp::prediction_write(double** distances, int protein_size, int input_shape){
+    ofstream file("../resource/prediction/distances_file.csv", ios::out | ios::trunc);
+            if(file){
+                file << protein_size << endl;
+                file << 15 << "," << input_shape << endl; // size of one sequence, input shape
+
+                for(int i = 0; i < protein_size; i++){
+                    for(int j = 0; j < input_shape - 1; j++){ file << distances[i][j] << ",";}
+                    file << distances[i][input_shape] << endl;
+                }
+
+                file.close();
+            }
+}
+
+
+
+double** SEProteinDesignApp::prediction_read(){
+    ifstream file("../resource/prediction/predicted_protein.csv", ios::in);  // on ouvre le fichier en lecture
+
+    if(file){
+        int protein_size;
+        file >> protein_size;
+
+        //initialization of prediction
+        double** prediction = new double*[protein_size];
+        for(int i = 0; i < protein_size; i++){ prediction[i] = new double[22];}
+
+        for(int i = 0; i < protein_size; i ++){
+            for(int j = 0; j < 22; j++) {
+                file >> prediction[i][j];
+                file.ignore();
+            }
+        }
+        file.close();
+        return prediction;
+    }
+    cerr << "ERROR: File predicted_protein.csv does not exist !!" << endl;
+    return nullptr;
+}
+
+
+string** SEProteinDesignApp::prediction()
+{
+    // get distances
+    double** distances = findAminoAcid();
+    int protein_size = sizeof(distances)/sizeof(*distances);
+    int input_shape = 105;
+
+    // Write the distances file
+    write(distances, protein_size, input_shape);
+
+    // Call the script (depending on the platform)
+
+    #if defined( __APPLE__) // Mac OS
+        system("./../resource/prediction/mac/prediction");
+
+    #elif defined(__WIN32) // Windows
+        system("start ../resource/prediction/win/prediction.exe");
+
+    #elif defined(__linux__) // Linux
+        system("./../resource/prediction/linux/prediction");
+
+    #else
+        cerr << "ERROR : Platform not supported" << endl;
+
+    #endif
+
+
+    // Get back the predicted_protein.csv
+    double** predicted_protein = read();
+
+    // Transform it into an array of strings
+    Sequence seq(predicted_protein, protein_size);
+    string** probabilities = seq.getSequence();
+
+    return probabilities;
 }
