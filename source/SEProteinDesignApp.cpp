@@ -71,7 +71,7 @@ SBNodeIndexer SEProteinDesignApp::getListNodes() {
 
 
 
-			int numberofnodesmin = (int)(dist * 10) / 38;
+			int numberofnodesmin = (int)(dist  / step);
 			curvelength = step * numberofnodesmin;
 
 			double R = sqrt(pow(dist, 3) * 1. / 24 / (curvelength - dist));
