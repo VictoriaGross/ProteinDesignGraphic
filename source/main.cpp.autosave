@@ -1,0 +1,15 @@
+
+
+using namespace std;
+
+/* This program must be formatted in a SAMSON Element.
+ * For the moment, it generates a distances 2D-array filled with zeros: the goal is to get the real distances 2D-array
+ * (to be made using SAMSON).
+ *
+ * This distances 2D-array is written into a distances_file.csv.
+ * For now on, it is written in a distances_file_test.csv,
+ * the distances_file.csv is a real distances file used for testin (15 first aminoacids of matrix.csv).
+ *
+ * The program calls a python script which encapsulates the neural network, the problem is that you need to have
+ * TF on your python installation, it would be great to find a way to get rid of this problem (maybe making an executable ?)*/
+
