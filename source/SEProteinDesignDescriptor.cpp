@@ -37,7 +37,7 @@
 /// \headerfile SEProteinDesignExporterDescriptor.hpp "SEProteinDesignExporterDescriptor.hpp"
 #include "SEProteinDesignExporterDescriptor.hpp"
 
-
+#include "SEProteinDesignAppDescriptor.hpp"
 
 // Describe the SAMSON Element
 
@@ -50,6 +50,7 @@ SB_ELEMENT_VERSION_NUMBER("0.7.0");
 
 SB_ELEMENT_CLASSES_BEGIN;
 
+	SB_ELEMENT_CLASS(SEProteinDesignApp);
 	SB_ELEMENT_CLASS(SEProteinDesignNodeCarbonAlpha);
 	SB_ELEMENT_CLASS(SEProteinDesignNodeCarbonAlphaGUI);
 	SB_ELEMENT_CLASS(SEProteinDesignNodeCarbonAlphaProperties);
