@@ -7,7 +7,12 @@
 #include "SEProteinDesignVisualModelBackbone.hpp"
 #include "SEProteinDesignVisualModelCurve.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <cstdlib>
 
+#include "sequence.hpp"
 
 /// This class implements the functionality of the app
 
@@ -35,8 +40,14 @@ public :
     //@}
 
     SBNodeIndexer getListNodes();
-        void FindAminoAcid();
-        double distance(SBAtom* atom1,SBAtom* atom2);
+    double** findAminoAcid();
+    double distance(SBAtom* atom1,SBAtom* atom2);
+
+    void prediction_write(double** distances, int protein_size, int input_shape);
+    double** prediction_read();
+
+    std::string** prediction();
+
 
 private:
     SBPointerList< SBMVisualModel > const* visualModelList;

@@ -175,6 +175,7 @@ void SEProteinDesignEditorSpline::mouseReleaseEvent(QMouseEvent* event) {
         node->create();
         path->addNode(node);
         SAMSON::endHolding();
+        SAMSON::requestViewportUpdate();
 
 }
 

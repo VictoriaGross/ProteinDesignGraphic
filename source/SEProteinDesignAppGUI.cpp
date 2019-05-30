@@ -2,6 +2,8 @@
 #include "SEProteinDesignApp.hpp"
 #include "SAMSON.hpp"
 #include "SBGWindow.hpp"
+#include <QComboBox>
+#include <string>
 
 SEProteinDesignAppGUI::SEProteinDesignAppGUI( SEProteinDesignApp* t ) : SBGApp( t ) {
 
@@ -73,4 +75,41 @@ QString SEProteinDesignAppGUI::getCitation() const {
 		"<br/>"
 		"[1] <a href=\"https://www.samson-connect.net\">https://www.samson-connect.net</a><br/>";
 	
+}
+
+
+
+//string* a = new string[5]{"A : 10%","B : 20%","C : 30%","D : 40%","E : 0%"};
+
+//string* b = new string[5]{"A : 20%","B : 40%","C : 10%","D : 0%","E : 30%"};
+
+//string* c = new string[5]{"A : 0%","B : 40%","C : 20%","D : 30%","E : 10%"};
+
+//string** resultat = new string*[3]{a,b,c};
+
+void SEProteinDesignAppGUI::compute(){
+
+    ui.label->setText(QString("test"));
+
+    string** resultat = getApp()->prediction();
+    int n = 3; //number of amino acids, not found yet
+    int m = 22;
+    ui.table->setColumnCount(2);
+    ui.table->setRowCount(n);
+
+    for (int i=0;i<n;i++){
+
+        QTableWidgetItem *text = new QTableWidgetItem(QString("Amino Acid #") + QString("%1").arg(i));
+        ui.table->setItem(i,0,text);
+
+        QComboBox *combo = new QComboBox;
+        for (int j=0;j<m;j++){
+        std::string str = resultat[i][j];
+        QString t = QString::fromStdString(str);
+        combo->addItem(t);
+        }
+
+        ui.table->setCellWidget(i,1,combo);
+    }
+
 }
