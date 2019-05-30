@@ -34,10 +34,10 @@ public:
 	SEProteinDesignEditorHelix();																													///< Builds an editor					
 	virtual ~SEProteinDesignEditorHelix();																											///< Destructs the editor
 
-	//@}
+																																					//@}
 
-	/// \name Identity
-	//@{
+																																					/// \name Identity
+																																					//@{
 
 	virtual SBCContainerUUID									getUUID() const;														///< Returns the widget UUID
 	virtual QString												getName() const;														///< Returns the class name
@@ -47,42 +47,42 @@ public:
 	virtual QKeySequence										getShortcut() const;													///< Returns the shorcut
 	virtual QString												getToolTip() const;														///< Returns the tool tip
 
-	//@}
+																																		//@}
 
-	///\name Settings
-	//@{
+																																		///\name Settings
+																																		//@{
 
 	virtual void												loadSettings(SBGSettings* settings);									///< Loads \p settings
 	virtual void												saveSettings(SBGSettings* settings);									///< Saves \p settings
 
-	//@}
+																																		//@}
 
-	/// \name Editing
-	//@{
+																																		/// \name Editing
+																																		//@{
 
 	virtual void												beginEditing();															///< Called when editing is about to begin
 	virtual void												endEditing();															///< Called when editing is about to end
 
-	//@}
+																																		//@}
 
-	/// \name Actions
-	//@{
+																																		/// \name Actions
+																																		//@{
 
 	virtual void												getActions(SBVector<SBAction*>& actionVector);							///< Gets the editor's actions
 
-	//@}
+																																		//@}
 
-	/// \name Rendering
-	//@{
+																																		/// \name Rendering
+																																		//@{
 
 	virtual void												display();																///< Displays the editor
 	virtual void												displayForShadow();														///< Displays the editor for shadow purposes
 	virtual void												displayInterface();														///< Displays the 2D interface in the viewport
 
-	//@}
+																																		//@}
 
-	/// \name GUI Events
-	//@{
+																																		/// \name GUI Events
+																																		//@{
 
 	virtual void												mousePressEvent(QMouseEvent* event);									///< Handles mouse press event
 	virtual void												mouseReleaseEvent(QMouseEvent* event);									///< Handles mouse release event
@@ -94,41 +94,41 @@ public:
 	virtual void												keyPressEvent(QKeyEvent* event);										///< Handles key press event
 	virtual void												keyReleaseEvent(QKeyEvent* event);										///< Handles key release event
 
-	//@}
+																																		//@}
 
-	/// \name SAMSON Events
-	//@{
+																																		/// \name SAMSON Events
+																																		//@{
 
 	virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
 	virtual void												onDynamicalEvent(SBDynamicalEvent* dynamicalEvent);						///< Handles dynamical events
 	virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
 	virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
 
-	//@}
+																																		//@}
 
-	/// \name GUI
-	//@{
+																																		/// \name GUI
+																																		//@{
 
 	SEProteinDesignEditorHelixGUI*											getPropertyWidget() const;												///< Returns the property widget of the editor
 
-//}@
+																																					//}@
 
-	/*void setBegin(SBPosition3&);
-	void setEnd(SBPosition3&);*/
+																																					/*void setBegin(SBPosition3&);
+																																					void setEnd(SBPosition3&);*/
 
 	void setCurrentEnd(SEProteinDesignNodeConstructionPoint* point);
 	void setCurrentBegin(SEProteinDesignNodeConstructionPoint* point);
 	SEProteinDesignNodeConstructionPoint* getCurrentBegin();
 	SEProteinDesignNodeConstructionPoint* getCurrentEnd();
-	
+
 	// Functions to manage the lists of construction points
-    void addBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
-    void addEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
-    void removeEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
-    void removeBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+	//void addBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+	//void addEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+	//void removeEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+	//void removeBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
 
 
-    SEProteinDesignVisualModelBackbone* getHelix(SEProteinDesignNodeConstructionPoint* point);
+	SEProteinDesignVisualModelBackbone* getHelix(SEProteinDesignNodeConstructionPoint* point);
 
 private:
 
@@ -136,14 +136,14 @@ private:
 	SEProteinDesignNodeConstructionPoint* beginHelixCurrent;
 	SEProteinDesignNodeConstructionPoint* endHelixCurrent;
 	SBPointer<SEProteinDesignVisualModelBackbone> path;
-	
-    // To manage the construction points and helixes
-    QList<SEProteinDesignNodeConstructionPoint*> beginHelixList;
-    QList<SEProteinDesignNodeConstructionPoint*> endHelixList;
-    QList<SEProteinDesignVisualModelBackbone*> helixList;
+
+	// To manage the construction points and helixes
+	//QList<SEProteinDesignNodeConstructionPoint*> beginHelixList;
+	//QList<SEProteinDesignNodeConstructionPoint*> endHelixList;
+	QList<SEProteinDesignVisualModelBackbone*> helixList;
 
 
-    SEProteinDesignNodeConstructionPoint* selectedPathNode;
+	SEProteinDesignNodeConstructionPoint* selectedPathNode;
 
 
 };
