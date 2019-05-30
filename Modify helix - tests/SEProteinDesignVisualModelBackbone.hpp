@@ -71,18 +71,18 @@ public :
 	void removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarboneAlpha);
 	SEProteinDesignNodeCarbonAlpha* last();
     SEProteinDesignNodeCarbonAlpha* first();
-    SEProteinDesignNodeConstructionPoint getBeginHelix() const;
+    SEProteinDesignNodeConstructionPoint* getBeginHelix() const;
     void setBeginHelix(SEProteinDesignNodeConstructionPoint* point);
-    SEProteinDesignNodeConstructionPoint getEndHelix() const;
+    SEProteinDesignNodeConstructionPoint* getEndHelix() const;
     void setEndHelix(SEProteinDesignNodeConstructionPoint* point);
     SBPointerList<SEProteinDesignNodeCarbonAlpha> getCarbonAlphaList() const;
-
+    void eraseCarbonAlpha();
 
 private: 
 	// The helix stores a list of CarbonAlpha
 	SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
-    SEProteinDesignNodeConstructionPoint beginHelix;
-    SEProteinDesignNodeConstructionPoint endHelix;
+    SEProteinDesignNodeConstructionPoint* beginHelix;
+    SEProteinDesignNodeConstructionPoint* endHelix;
 
 };
 

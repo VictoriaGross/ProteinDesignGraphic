@@ -143,36 +143,39 @@ void SEProteinDesignVisualModelBackbone::displayForSelection() {
 // Carbon.getNodeIndex
     if (pathNodeCarbonAlphaList.empty()) return;
 
-        unsigned int numberOfPathNodes = pathNodeCarbonAlphaList.size();
 
         // allocate arrays and initialize them to zeros
 
-        float* positionData = new float[3 * numberOfPathNodes]();
-        float* pathNodeRadiusData = new float[numberOfPathNodes]();
-        unsigned int* nodeIndexData = new unsigned int[numberOfPathNodes]();
+        float* positionData = new float[6]();
+        float* pathNodeRadiusData = new float[2]();
+        unsigned int* nodeIndexData = new unsigned int[2]();
 
         // fill in the arrays
 
-        unsigned int currentPathNodeIndex = 0;
+        //begin point
+        SBPosition3 position = beginHelix->getPosition();
+        positionData[0] = (float)position.v[0].getValue();
+        positionData[1] = (float)position.v[1].getValue();
+        positionData[2] = (float)position.v[2].getValue();
 
-        SB_FOR(SEProteinDesignNodeCarbonAlpha* currentPathNode, pathNodeCarbonAlphaList) {
+        pathNodeRadiusData[0] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
 
-            SBPosition3 position = currentPathNode->getPosition();
-            positionData[3 * currentPathNodeIndex + 0] = (float)position.v[0].getValue();
-            positionData[3 * currentPathNodeIndex + 1] = (float)position.v[1].getValue();
-            positionData[3 * currentPathNodeIndex + 2] = (float)position.v[2].getValue();
+        nodeIndexData[0] = beginHelix->getNodeIndex();
 
-            pathNodeRadiusData[currentPathNodeIndex] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
 
-            nodeIndexData[currentPathNodeIndex] = currentPathNode->getNodeIndex();
+        //end point
+        position = endHelix->getPosition();
+        positionData[3] = (float)position.v[0].getValue();
+        positionData[4] = (float)position.v[1].getValue();
+        positionData[5] = (float)position.v[2].getValue();
 
-            currentPathNodeIndex++;
+        pathNodeRadiusData[1] = (float)SBQuantity::length(SBQuantity::angstrom(0.1)).getValue();
 
-        }
+        nodeIndexData[1] = beginHelix->getNodeIndex();
 
         // display
 
-        SAMSON::displaySpheresSelection(numberOfPathNodes, positionData, pathNodeRadiusData, nodeIndexData);
+        SAMSON::displaySpheresSelection(2, positionData, pathNodeRadiusData, nodeIndexData);
 
         // clean
 
@@ -225,9 +228,60 @@ void SEProteinDesignVisualModelBackbone::onStructuralEvent(SBStructuralEvent* do
 
 }
 
+
+/*
+
+class AddNodeCommand : public SBCUndoCommand {
+
+public:
+
+    AddNodeCommand(SEProteinDesignVisualModelBackbone* path, SEProteinDesignNodeConstructionPoint* node) { this->path=path; this->node = node; }
+
+    /// \name Undo / Redo
+    //@{
+
+    virtual void												redo() { path->addNode(node());}
+    virtual void												undo() { path->removeNode(node());}
+
+    virtual std::string											getName() const { return "Add node"; }
+
+private:
+
+    SBPointer<SEProteinDesignVisualModelBackbone>               path;
+    SBPointer<SEProteinDesignNodeConstructionPoint>             node;
+
+};
+
+class RemoveNodeCommand : public SBCUndoCommand {
+
+public:
+
+    RemoveNodeCommand(SEProteinDesignVisualModelBackbone* path, SEProteinDesignNodeConstructionPoint* node) { this->path=path; this->node = node; }
+
+    /// \name Undo / Redo
+    //@{
+
+    virtual void												redo() { path->removeNode(node()); }
+    virtual void												undo() { path->addNode(node()); }
+
+    virtual std::string											getName() const { return "Remove node"; }
+
+private:
+
+    SBPointer<SEProteinDesignVisualModelBackbone>               path;
+    SBPointer<SEProteinDesignNodeConstructionPoint>             node;
+
+};
+
+
+*/
+
+
+
 void SEProteinDesignVisualModelBackbone::addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha) {
 
 	if (!pathNodeCarbonAlpha) return;
+    //if (SAMSON::isHolding()) SAMSON::addUndoCommand(new AddNodeCommand(this,node));
 	pathNodeCarbonAlphaList.addReferenceTarget(pathNodeCarbonAlpha);
 
 }
@@ -235,6 +289,7 @@ void SEProteinDesignVisualModelBackbone::addNode(SEProteinDesignNodeCarbonAlpha*
 void SEProteinDesignVisualModelBackbone::removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha) {
 
 	if (!pathNodeCarbonAlpha) return;
+    //if (SAMSON::isHolding()) SAMSON::addUndoCommand(new RemoveNodeCommand(this,node));
 	pathNodeCarbonAlphaList.removeReferenceTarget(pathNodeCarbonAlpha);
 
 }
@@ -247,23 +302,28 @@ SEProteinDesignNodeCarbonAlpha* SEProteinDesignVisualModelBackbone::first() {
     return pathNodeCarbonAlphaList.first();
 }
 
-SEProteinDesignNodeConstructionPoint SEProteinDesignVisualModelBackbone::getBeginHelix() const{
+SEProteinDesignNodeConstructionPoint* SEProteinDesignVisualModelBackbone::getBeginHelix() const{
     return beginHelix;
 }
 
 void SEProteinDesignVisualModelBackbone::setBeginHelix(SEProteinDesignNodeConstructionPoint* point){
-    this->beginHelix=*point;
+    this->beginHelix=point;
 }
 
-SEProteinDesignNodeConstructionPoint SEProteinDesignVisualModelBackbone::getEndHelix() const{
+SEProteinDesignNodeConstructionPoint* SEProteinDesignVisualModelBackbone::getEndHelix() const{
     return endHelix;
 }
 
 void SEProteinDesignVisualModelBackbone::setEndHelix(SEProteinDesignNodeConstructionPoint* point){
-    this->endHelix=*point;
+    this->endHelix=point;
 }
 
 
 SBPointerList<SEProteinDesignNodeCarbonAlpha> SEProteinDesignVisualModelBackbone::getCarbonAlphaList() const{
     return pathNodeCarbonAlphaList;
+}
+
+
+void SEProteinDesignVisualModelBackbone::eraseCarbonAlpha(){
+    this->pathNodeCarbonAlphaList.erase(pathNodeCarbonAlphaList.begin(),pathNodeCarbonAlphaList.end());
 }

@@ -16,6 +16,8 @@
 // We will need to access the backbone visual model
 #include "SEProteinDesignVisualModelBackbone.hpp"
 
+#include <QList>
+
 
 /// This class implements an editor
 
@@ -120,11 +122,13 @@ public:
 	SEProteinDesignNodeConstructionPoint* getCurrentEnd();
 	
 	// Functions to manage the lists of construction points
-	void addBeginPoint(SEProteinDesignNodeConstructionPoint* point);
-	void addEndPoint(SEProteinDesignNodeConstructionPoint* point);
-	void removeEndPoint(SEProteinDesignNodeConstructionPoint* point);
-	void removeBeginPoint(SEProteinDesignNodeConstructionPoint* point);
+    void addBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+    void addEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+    void removeEndPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
+    void removeBeginPoint(SEProteinDesignNodeConstructionPoint* pathNode, SEProteinDesignVisualModelBackbone* helix = 0);
 
+
+    SEProteinDesignVisualModelBackbone* getHelix(SEProteinDesignNodeConstructionPoint* point);
 
 private:
 
@@ -133,12 +137,13 @@ private:
 	SEProteinDesignNodeConstructionPoint* endHelixCurrent;
 	SBPointer<SEProteinDesignVisualModelBackbone> path;
 	
-	// To manage the construction points
-	SBPointerList<SEProteinDesignNodeConstructionPoint> beginHelixList;
-	SBPointerList<SEProteinDesignNodeConstructionPoint> endHelixList;
+    // To manage the construction points and helixes
+    QList<SEProteinDesignNodeConstructionPoint*> beginHelixList;
+    QList<SEProteinDesignNodeConstructionPoint*> endHelixList;
+    QList<SEProteinDesignVisualModelBackbone*> helixList;
 
 
-    SBPointer<SEProteinDesignVisualModelBackbone> selectedPathNode;
+    SEProteinDesignNodeConstructionPoint* selectedPathNode;
 
 
 };

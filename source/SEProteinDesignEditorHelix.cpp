@@ -104,6 +104,7 @@ void SEProteinDesignEditorHelix::beginEditing() {
 	path = 0;
 	beginHelixCurrent =0 ;
 	endHelixCurrent = 0;
+    selectedPathNode = 0;
 
 	// If we don't edit end and beginning have the same value
 	
@@ -116,6 +117,7 @@ void SEProteinDesignEditorHelix::endEditing() {
 	path = 0;
 	beginHelixCurrent = 0;
 	endHelixCurrent = 0;
+    selectedPathNode = 0;
 	
 }
 
@@ -233,28 +235,62 @@ void SEProteinDesignEditorHelix::displayInterface() {
 }
 
 void SEProteinDesignEditorHelix::mousePressEvent(QMouseEvent* event) {
-	if (event->button() ==
+
+    // if the user clicked on an existing node path
+
+   SBNode* node = SAMSON::getNode(event->x(), event->y(),
+       (SBNode::GetClass() == std::string("SEProteinDesignVisualModelBackbone")) &&
+       (SBNode::GetElementUUID() == SBUUID(SB_ELEMENT_UUID)));
+
+    if (node) {
+        SAMSON::beginHolding("Erase helix");
+        selectedPathNode = static_cast<SEProteinDesignVisualModelBackbone*>(node);
+        SEProteinDesignNodeConstructionPoint* pointer;
+        SEProteinDesignNodeConstructionPoint edge = selectedPathNode->getBeginHelix();
+        pointer = &edge;
+        setCurrentBegin(pointer);
+        selectedPathNode.deleteReferenceTarget();
+
+        path = new SEProteinDesignVisualModelBackbone();
+        path->create();
+        path->setBeginHelix(beginHelixCurrent);
+        SAMSON::endHolding();
+
+
+    }
+    else selectedPathNode = 0;
+
+
+    if (event->button() ==
 		Qt::MouseButton::LeftButton) {
 		if (path == 0 || (path != 0 && path->isErased())) {
 
+            SAMSON::beginHolding("New helix");
 			path = new SEProteinDesignVisualModelBackbone();
 			path->create();
 			SAMSON::getActiveLayer()->addChild(path());
+            SAMSON::endHolding();
 
 				//// We place the ConstructionPoint beginHelix
 				
 				SBPosition3 MousePos = SAMSON::getWorldPositionFromViewportPosition(event->x(), event->y());
 				setCurrentBegin(new SEProteinDesignNodeConstructionPoint(MousePos));
 				addBeginPoint(beginHelixCurrent);
-				SAMSON::requestViewportUpdate();
+                SAMSON::requestViewportUpdate();
+
+
+                path->setBeginHelix(beginHelixCurrent);
+                SAMSON::endHolding();
 		}
-		
-	}
+
+
+        }
+
 }
 
 void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
-	
-		
+
+
 		
 		// In this case we start a new helix
 
@@ -264,6 +300,7 @@ void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
 		//We set the end of the helix
 		setCurrentEnd(new SEProteinDesignNodeConstructionPoint(MousePos));
 		addEndPoint(endHelixCurrent);
+        path->setEndHelix(endHelixCurrent);
 		SAMSON::requestViewportUpdate();
 
 		// The coordinates of the Helix axis system in the General Fixed axis system
@@ -287,6 +324,8 @@ void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
 		int numb = floor(NumberofCarbons);
 		//// THE PROBLEM LIES IN THE TWO WHILE LOOPS
 
+
+
 		for (int i = 0; i < numb + 1; i += 1) {
 
 			
@@ -296,16 +335,21 @@ void SEProteinDesignEditorHelix::mouseReleaseEvent(QMouseEvent* event) {
 			SBPosition3 CurrentCarbonZ = -HelixRadius*sin(i*RotationPace)*AxisZnormed;
 			SEProteinDesignNodeCarbonAlpha* CurrentCarbon = new SEProteinDesignNodeCarbonAlpha(CurrentCarbonV + CurrentCarbonT + CurrentCarbonZ + MousePos);
 
+            SAMSON::beginHolding("Add node");
 			path->addNode(CurrentCarbon);
-			
+            SAMSON::endHolding();
+
 			SAMSON::requestViewportUpdate();
 			
 		
 		}
+
 		
 		SAMSON::requestViewportUpdate();
 		path = 0;
 
+
+        selectedPathNode=0;
 	
 
 	}
@@ -334,7 +378,9 @@ void SEProteinDesignEditorHelix::keyPressEvent(QKeyEvent* event) {
 	// It is possible to stop the current path by pressing Escape
 	if (event->key() == Qt::Key_Escape) {
 		path = 0;
-		event->accept();
+        selectedPathNode = 0;
+        event->accept();
+
 	}
 
 
