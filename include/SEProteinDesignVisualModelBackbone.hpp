@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "SBMVisualModel.hpp"
 
@@ -14,75 +14,75 @@
 
 class SEProteinDesignVisualModelBackbone : public SBMVisualModel {
 
-	SB_CLASS
+    SB_CLASS
 
 public :
 
-	/// \name Constructors and destructors
-	//@{
+    /// \name Constructors and destructors
+    //@{
 
-	SEProteinDesignVisualModelBackbone();																													///< Builds a visual model					
-	SEProteinDesignVisualModelBackbone(const SBNodeIndexer& nodeIndexer);																					///< Builds a visual model 
-	virtual ~SEProteinDesignVisualModelBackbone();																											///< Destructs the visual model
+    SEProteinDesignVisualModelBackbone();																													///< Builds a visual model
+    SEProteinDesignVisualModelBackbone(const SBNodeIndexer& nodeIndexer);																					///< Builds a visual model
+    virtual ~SEProteinDesignVisualModelBackbone();																											///< Destructs the visual model
 
-	//@}
+    //@}
 
-	/// \name Serialization
-	//@{
+    /// \name Serialization
+    //@{
 
-	virtual bool												isSerializable() const;													///< Returns true when the class is serializable
+    virtual bool												isSerializable() const;													///< Returns true when the class is serializable
 
-	virtual void												serialize(SBCSerializer* serializer, const SBNodeIndexer& nodeIndexer, const SBVersionNumber& sdkVersionNumber = SB_SDK_VERSION_NUMBER, const SBVersionNumber& classVersionNumber = SBVersionNumber(1, 0, 0)) const;		///< Serializes the node
-	virtual void												unserialize(SBCSerializer* serializer, const SBNodeIndexer& nodeIndexer, const SBVersionNumber& sdkVersionNumber = SB_SDK_VERSION_NUMBER, const SBVersionNumber& classVersionNumber = SBVersionNumber(1, 0, 0));			///< Unserializes the node
+    virtual void												serialize(SBCSerializer* serializer, const SBNodeIndexer& nodeIndexer, const SBVersionNumber& sdkVersionNumber = SB_SDK_VERSION_NUMBER, const SBVersionNumber& classVersionNumber = SBVersionNumber(1, 0, 0)) const;		///< Serializes the node
+    virtual void												unserialize(SBCSerializer* serializer, const SBNodeIndexer& nodeIndexer, const SBVersionNumber& sdkVersionNumber = SB_SDK_VERSION_NUMBER, const SBVersionNumber& classVersionNumber = SBVersionNumber(1, 0, 0));			///< Unserializes the node
 
-	//@}
+    //@}
 
-	/// \name Topology
-	//@{
+    /// \name Topology
+    //@{
 
-	virtual	void												eraseImplementation();													///< Erases the visual model
+    virtual	void												eraseImplementation();													///< Erases the visual model
 
-	//@}
+    //@}
 
-	/// \name Rendering
-	//@{
+    /// \name Rendering
+    //@{
 
-	virtual void												display();																///< Displays the visual model
-	virtual void												displayForShadow();														///< Displays the visual model for shadow purposes
-	virtual void												displayForSelection();													///< Displays the visual model for selection purposes
+    virtual void												display();																///< Displays the visual model
+    virtual void												displayForShadow();														///< Displays the visual model for shadow purposes
+    virtual void												displayForSelection();													///< Displays the visual model for selection purposes
 
-	virtual void												expandBounds(SBIAPosition3& bounds) const;								///< Expands the bounds to make sure the visual model fits inside them
+    virtual void												expandBounds(SBIAPosition3& bounds) const;								///< Expands the bounds to make sure the visual model fits inside them
 
-	virtual void												collectAmbientOcclusion(const SBPosition3& boxOrigin, const SBPosition3& boxSize, unsigned int nCellsX, unsigned int nCellsY, unsigned int nCellsZ, float* ambientOcclusionData);		///< To collect ambient occlusion data
+    virtual void												collectAmbientOcclusion(const SBPosition3& boxOrigin, const SBPosition3& boxSize, unsigned int nCellsX, unsigned int nCellsY, unsigned int nCellsZ, float* ambientOcclusionData);		///< To collect ambient occlusion data
 
-	//@}
+    //@}
 
-	/// \name Events
-	//@{
+    /// \name Events
+    //@{
 
-	virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
-	virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
-	virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
+    virtual void												onBaseEvent(SBBaseEvent* baseEvent);									///< Handles base events
+    virtual void												onDocumentEvent(SBDocumentEvent* documentEvent);						///< Handles document events
+    virtual void												onStructuralEvent(SBStructuralEvent* documentEvent);					///< Handles structural events
 
-	//@}
+    //@}
 
-	// The helix stores a list of CarbonAlpha																																				
-	void addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha);
-	void removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarboneAlpha);
-	SEProteinDesignNodeCarbonAlpha* last();
+    // The helix stores a list of CarbonAlpha
+    void addNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarbonAlpha);
+    void removeNode(SEProteinDesignNodeCarbonAlpha* pathNodeCarboneAlpha);
+    SEProteinDesignNodeCarbonAlpha* last();
     SEProteinDesignNodeCarbonAlpha* first();
-    SEProteinDesignNodeConstructionPoint getBeginHelix() const;
+    SEProteinDesignNodeConstructionPoint* getBeginHelix() const;
     void setBeginHelix(SEProteinDesignNodeConstructionPoint* point);
-    SEProteinDesignNodeConstructionPoint getEndHelix() const;
+    SEProteinDesignNodeConstructionPoint* getEndHelix() const;
     void setEndHelix(SEProteinDesignNodeConstructionPoint* point);
     SBPointerList<SEProteinDesignNodeCarbonAlpha> getCarbonAlphaList() const;
+    void eraseCarbonAlpha();
 
-
-private: 
-	// The helix stores a list of CarbonAlpha
-	SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
-    SEProteinDesignNodeConstructionPoint beginHelix;
-    SEProteinDesignNodeConstructionPoint endHelix;
+private:
+    // The helix stores a list of CarbonAlpha
+    SBPointerList<SEProteinDesignNodeCarbonAlpha> pathNodeCarbonAlphaList;
+    SEProteinDesignNodeConstructionPoint* beginHelix;
+    SEProteinDesignNodeConstructionPoint* endHelix;
 
 };
 
