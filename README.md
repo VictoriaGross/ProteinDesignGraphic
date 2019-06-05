@@ -14,11 +14,11 @@ In the application we connect all the alpha carbons from all the models and from
 ```
 SEProteinDesignApp::getListNodes()
 ```
-Futher a matrice of distances is constructed from that list.
+Then a matrice of distances is constructed from that list.
 ```
 SEProteinDesignApp::findAminoAcid()
 ```
-Futher we get the results of prediction. 
+Afterwards we obtain the prediction results. 
 ```
 SEProteinDesignApp::prediction()
 ```
